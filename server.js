@@ -1,3 +1,4 @@
+import mysql from "mysql2";
 import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
@@ -14,7 +15,7 @@ app.listen(port, () => {
   console.log(`The sever is running on port ${port}\nEnjoy your day :)`);
 });
 
-//////// ALBUM ROUTS ////////
+//////// ------------- ALBUM ROUTS ------------- ////////
 
 // READ all albums
 app.get("/albums", (request, response) => {
@@ -87,6 +88,52 @@ app.delete("/albums/:albumId", async (request, response) => {
       console.log(err);
     } else {
       response.json(results);
+    }
+  });
+});
+
+//////// ------------- ALBUM MANY TO MANY ------------- ////////
+
+app.get("/album/:id", (request, response) => {
+  const id = request.params.id;
+  const query = /*sql*/ `
+  SELECT albums.albumName AS albumName,
+  tracks.trackID AS trackID,
+  tracks.trackName AS trackName,
+  tracks.length AS trackLength,
+  tracks.creationYear AS trackYear,
+  tracks.genre AS genre
+
+  FROM albums
+  JOIN album_tracks 
+  ON albums.albumID = albums_tracks.albumID
+  JOIN tracks
+  ON tracks.trackID = albums_tracks.trackID
+  WHERE albums.albumID = ?
+  ORDER BY albums.albumName, albums_tracks.Name;
+    `;
+
+  const values = [id];
+  dbConnection.quer(query, values, (error, results) => {
+    if (error) {
+      console.log(error);
+    } else {
+      if (results[id]) {
+        const newAlbum = {
+          name: results[id].albumName,
+          track: results.map((track) => {
+            return {
+              id: track.trackID,
+              length: track.trackLenght,
+              year: track.trackYear,
+              genre: track.genre,
+            };
+          }),
+        };
+        response.json(newAlbum);
+      } else {
+        console.log("No album found");
+      }
     }
   });
 });
