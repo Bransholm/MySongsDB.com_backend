@@ -2,7 +2,7 @@ import mysql from "mysql2";
 import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
-import connection from "./database.js";
+import connection from "./Data/data_connections.js";
 
 const app = express();
 const port = 4000;
