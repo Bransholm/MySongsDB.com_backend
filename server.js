@@ -18,9 +18,7 @@ app.listen(port, () => {
 //////// ARTIST ROUTES ////////
 
 app.get("/", (request, response) => {
-  response.send(
-    "Jeg skal få den her database til at sende mig alt det her lort"
-  );
+  response.send("Du har nu forbindelse til Azure databasen");
 });
 
 app.get("/artists", (request, response) => {
