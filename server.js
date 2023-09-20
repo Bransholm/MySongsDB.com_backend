@@ -1,20 +1,37 @@
-import express from "express";
+import express, { response } from "express";
 import cors from "cors";
 import fs from "fs/promises";
-import connection from "./Data/data_connections.js";
+import dbConnection from "./database.js";
+import { request } from "http";
+import { error } from "console";
 
 const app = express();
-const port = 4000;
+const port = 3306;
 
 app.use(express.json());
 app.use(cors());
 
-if (process.env.MYSQL_CERT) {
-  dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
-}
-
 app.listen(port, () => {
   console.log(`The sever is running on port ${port}\nEnjoy your day :)`);
+});
+
+//////// ARTIST ROUTES ////////
+
+app.get("/", (request, response) => {
+  response.send(
+    "Jeg skal få den her database til at sende mig alt det her lort"
+  );
+});
+
+app.get("/artist", (request, response) => {
+  const query = "SELECT * FROM artist ORDER BY artistsName";
+  dbConnection.query(query, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 //////// ALBUM ROUTS ////////
@@ -22,7 +39,7 @@ app.listen(port, () => {
 // READ all albums
 app.get("/albums", (request, response) => {
   const query = "SELECT * FROM albums";
-  connection.query(query, (err, results, fields) => {
+  dbConnection.query(query, (err, results, fields) => {
     if (err) {
       console.log(err);
     } else {
@@ -37,7 +54,7 @@ app.get("/albums/:albumId", (request, response) => {
   const query = "SELECT * FROM users WHERE id=?";
   const values = [albumId];
 
-  connection.query(query, values, (err, results, fields) => {
+  dbConnection.query(query, values, (err, results, fields) => {
     if (err) {
       console.log(err);
     } else {
@@ -55,7 +72,7 @@ app.post("/albums", (request, response) => {
   const query =
     "INSERT INTO sers (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
 
-  connection.query(query, values, (err, results, fields) => {
+  dbConnection.query(query, values, (err, results, fields) => {
     response.json(results);
   });
 });
@@ -74,7 +91,7 @@ app.put("/album/:albumId", async (request, response) => {
   ];
   const query =
     "UPDATE userse SET albumName=?, edition=?, year=?, albumImage=? VALUES WHERE albumId=?";
-  connection.query(query, values, (err, results, fields) => {
+  dbConnection.query(query, values, (err, results, fields) => {
     response.json(results);
   });
 });
@@ -85,7 +102,7 @@ app.delete("/albums/:albumId", async (request, response) => {
   const values = [id];
   const query = "DELETE FROM album WHERE id=?";
 
-  connection.query(query, values, (err, results, fields) => {
+  dbConnection.query(query, values, (err, results, fields) => {
     if (err) {
       console.log(err);
     } else {
