@@ -4,7 +4,6 @@ import cors from "cors";
 import fs from "fs/promises";
 import connection from "./database.js";
 
-
 const app = express();
 const port = 4000;
 
@@ -141,3 +140,5 @@ app.get("/album/:id", (request, response) => {
     }
   });
 });
+
+// LALAL
