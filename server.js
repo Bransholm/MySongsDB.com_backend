@@ -1,7 +1,7 @@
 import express, { response } from "express";
 import cors from "cors";
 import fs from "fs/promises";
-import dbConnection from "./database.js";
+import dbConnection from "./data/database.js";
 import { request } from "http";
 import { error } from "console";
 
