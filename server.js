@@ -2,6 +2,7 @@ import mysql from "mysql2";
 import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
+import connection from "./database.js";
 
 const app = express();
 const port = 4000;
@@ -9,7 +10,9 @@ const port = 4000;
 app.use(express.json());
 app.use(cors());
 
-//Routes goes here...
+if (process.env.MYSQL_CERT) {
+  dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
+}
 
 app.listen(port, () => {
   console.log(`The sever is running on port ${port}\nEnjoy your day :)`);

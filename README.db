@@ -1,1 +1,1 @@
-Dependencies to install: express, cors & mysql2
+Dependencies to install: express, cors, dotenv & mysql2
