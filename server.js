@@ -5,8 +5,6 @@ import dbConnection from "./database.js";
 import { request } from "http";
 import { error } from "console";
 
-
-
 const app = express();
 const port = 3306;
 
@@ -25,8 +23,8 @@ app.get("/", (request, response) => {
   );
 });
 
-app.get("/artist", (request, response) => {
-  const query = "SELECT * FROM artist ORDER BY artistsName";
+app.get("/artists", (request, response) => {
+  const query = "SELECT * FROM artists ORDER BY artistsName";
   dbConnection.query(query, (error, results, fields) => {
     if (error) {
       console.log(error);
@@ -51,16 +49,16 @@ app.get("/albums", (request, response) => {
 });
 
 // READ one albums
-app.get("/albums/:albumId", (request, response) => {
-  const albumId = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-  const query = "SELECT * FROM users WHERE id=?";
-  const values = [albumId];
+app.get("/albums/:albumID", (request, response) => {
+  const id = request.params.albumID; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
+  const query = "SELECT * FROM albums WHERE id=?";
+  const values = [id];
 
   dbConnection.query(query, values, (err, results, fields) => {
     if (err) {
       console.log(err);
     } else {
-      response.json(results[albumId]);
+      response.json(results[0]);
     }
   });
 });
@@ -112,7 +110,6 @@ app.delete("/albums/:albumId", async (request, response) => {
     }
   });
 });
-
 
 //////// ------------- ALBUM MANY TO MANY ------------- ////////
 
