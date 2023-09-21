@@ -118,13 +118,19 @@ app.put("/tracks", (request, response) => {
 });
 
 // DELETE a track //
+app.delete("/tracks/:trackID", async (request, response) => {
+  const id = request.params.trackID;
+  const values = [id];
+  const query = "DELETE FROM tracks WHERE trackID=?";
 
-// app.delete("/tracks/:trackID", (request, response) => {
-//   const trackID =
-// }
-// )
-
-// })
+  dbConnection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
 
 //////// ALBUM ROUTS ////////
 
