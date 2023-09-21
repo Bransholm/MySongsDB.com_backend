@@ -120,9 +120,21 @@ app.delete("/albums/:albumId", async (request, response) => {
   });
 });
 
+// READ all albums
+app.get("/albums_tracks", (request, response) => {
+  const query = "SELECT * FROM albums_tracks";
+  dbConnection.query(query, (err, results, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
 //////// ------------- ALBUM MANY TO MANY ------------- ////////
 
-app.get("/albums/:id", (request, response) => {
+app.get("/albums/:id/tracks", (request, response) => {
   const id = request.params.id;
   const query = /*sql*/ `
   SELECT albums.albumName AS albumName,
@@ -133,16 +145,16 @@ app.get("/albums/:id", (request, response) => {
   tracks.genre AS genre
 
   FROM albums
-  JOIN album_tracks 
-  ON albums.albumID = albums_tracks.albumID
+  JOIN albums_tracks 
+  ON albums.albumID = albums_tracks.album_ID
   JOIN tracks
-  ON tracks.trackID = albums_tracks.trackID
+  ON tracks.trackID = albums_tracks.track_ID
   WHERE albums.albumID = ?
-  ORDER BY albums.albumName, albums_tracks.Name;
+  ORDER BY albums.albumName, tracks.Name;
     `;
 
   const values = [id];
-  dbConnection.quer(query, values, (error, results) => {
+  dbConnection.query(query, values, (error, results) => {
     if (error) {
       console.log(error);
     } else {
@@ -165,5 +177,3 @@ app.get("/albums/:id", (request, response) => {
     }
   });
 });
-
-// LALAL
