@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import cors from "cors";
 import fs from "fs/promises";
 import dbConnection from "./data/database.js";
@@ -92,9 +92,37 @@ app.post("/tracks", (request, response) => {
 
 // Update a track //
 
-// app.put("/tracks/:id" , (request, response) => {
-//   const trackID = request.params.id;
-//   const trackBody = request.body;
+app.put("/tracks", (request, response) => {
+  const trackID = request.params.id;
+  const trackBody = request.body;
+
+  console.log(trackID);
+  console.log(trackBody);
+
+  const values = [
+    trackBody.trackName,
+    trackBody.length,
+    trackBody.creationYear,
+    trackBody.genre,
+    trackID,
+  ];
+  const query =
+    "UPDATE tracks SET trackName=?, length=?, creationYear=?, genre=?";
+  dbConnection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
+// DELETE a track //
+
+// app.delete("/tracks/:trackID", (request, response) => {
+//   const trackID =
+// }
+// )
 
 // })
 
