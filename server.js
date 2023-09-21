@@ -78,7 +78,7 @@ app.post("/albums", (request, response) => {
 });
 
 // UPDATE albums
-app.put("/album/:albumId", async (request, response) => {
+app.put("/albums/:albumId", async (request, response) => {
   const albumId = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
   const albumBody = request.body;
 
@@ -113,7 +113,7 @@ app.delete("/albums/:albumId", async (request, response) => {
 
 //////// ------------- ALBUM MANY TO MANY ------------- ////////
 
-app.get("/album/:id", (request, response) => {
+app.get("/albums/:id", (request, response) => {
   const id = request.params.id;
   const query = /*sql*/ `
   SELECT albums.albumName AS albumName,
