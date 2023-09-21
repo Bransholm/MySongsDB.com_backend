@@ -6,7 +6,7 @@ import { request } from "http";
 import { error } from "console";
 
 const app = express();
-const port = 3306;
+const port = 4000;
 
 app.use(express.json());
 app.use(cors());
@@ -18,9 +18,7 @@ app.listen(port, () => {
 //////// ARTIST ROUTES ////////
 
 app.get("/", (request, response) => {
-  response.send(
-    "Jeg skal få den her database til at sende mig alt det her lort"
-  );
+  response.send("");
 });
 
 app.get("/artist", (request, response) => {
@@ -49,14 +47,16 @@ app.get("/albums", (request, response) => {
 });
 
 // READ one albums
-app.get("/albums/:albumId", (request, response) => {
-  const albumId = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-  const query = "SELECT * FROM albums WHERE id=?";
-  const values = [albumId];
+app.get("/albums/:id", (request, response) => {
+  const id = request.params.id;
+  const queryString = /*sql*/ `
+        SELECT * FROM albums
+            WHERE albums.albumID=?;`; // sql query
+  const values = [id];
 
-  dbConnection.query(query, values, (err, results, fields) => {
-    if (err) {
-      console.log(err);
+  dbConnection.query(queryString, values, (error, results) => {
+    if (error) {
+      console.log(error);
     } else {
       response.json(results[0]);
     }
@@ -70,29 +70,38 @@ app.post("/albums", (request, response) => {
 
   const values = [album.albumName, album.edition, album.year, album.albumImage];
   const query =
-    "INSERT INTO sers (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
+    "INSERT INTO albums (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
 
   dbConnection.query(query, values, (err, results, fields) => {
-    response.json(results);
+    if (err) {
+      console.log(err);
+    } else {
+      response.json(results);
+    }
   });
 });
 
 // UPDATE albums
 app.put("/albums/:albumId", async (request, response) => {
-  const albumId = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
+  const albumID = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
   const albumBody = request.body;
+  console.log(albumBody);
 
   const values = [
     albumBody.albumName,
     albumBody.edition,
     albumBody.year,
     albumBody.albumImage,
-    albumId,
+    albumID,
   ];
   const query =
-    "UPDATE userse SET albumName=?, edition=?, year=?, albumImage=? VALUES WHERE albumId=?";
+    "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
   dbConnection.query(query, values, (err, results, fields) => {
-    response.json(results);
+    if (err) {
+      console.log(err);
+    } else {
+      response.json(results);
+    }
   });
 });
 
@@ -100,7 +109,7 @@ app.put("/albums/:albumId", async (request, response) => {
 app.delete("/albums/:albumId", async (request, response) => {
   const id = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
   const values = [id];
-  const query = "DELETE FROM album WHERE id=?";
+  const query = "DELETE FROM albums WHERE albumID=?";
 
   dbConnection.query(query, values, (err, results, fields) => {
     if (err) {
