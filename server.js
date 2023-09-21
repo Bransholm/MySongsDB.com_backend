@@ -1,4 +1,4 @@
-import express, { response } from "express";
+import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
 import dbConnection from "./data/database.js";
@@ -33,6 +33,9 @@ app.get("/artist", (request, response) => {
     }
   });
 });
+
+
+
 
 //////// TRACKS ROUTES ////////
 
@@ -88,14 +91,17 @@ app.post("/tracks", (request, response) => {
   });
 });
 
+
+
+
 //////// ALBUM ROUTS ////////
 
 // READ all albums
 app.get("/albums", (request, response) => {
   const query = "SELECT * FROM albums";
-  dbConnection.query(query, (error, results, fields) => {
-    if (error) {
-      console.log(error);
+  dbConnection.query(query, (err, results, fields) => {
+    if (err) {
+      console.log(err);
     } else {
       response.json(results);
     }
