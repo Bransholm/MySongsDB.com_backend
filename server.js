@@ -13,7 +13,7 @@ app.use(cors());
 
 app.listen(port, () => {
   console.log(
-    `The sever is running on port http://127.0.0.1:${port}\nRasmus, Edith and Peter is proud of you\nEnjoy your day - You are doing a good job:)`
+    `The sever is run on port http://127.0.0.1:${port}\nRasmus, Edith and Peter is proud of you\nEnjoy your day - You are doing a good job:)`
   );
 });
 //Github Actions
