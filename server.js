@@ -38,7 +38,7 @@ app.get("/artist", (request, response) => {
 
 // READ all tracks //
 app.get("/tracks", (request, response) => {
-  const query = "SELECT * FROM artists ORDER by tracksName";
+  const query = "SELECT * FROM tracks ORDER by trackName";
   dbConnection.query(query, (error, results, fields) => {
     if (error) {
       console.log(error);
@@ -50,16 +50,18 @@ app.get("/tracks", (request, response) => {
 
 // READ one track //
 
-app.get("/tracks/:trackID", (request, response) => {
-  const id = request.params.trackID;
-  const query = "SELECT * FROM tracks WHERE id=?";
+app.get("/tracks/:tracksID", (request, response) => {
+  const id = request.params.tracksID;
+  const queryString = /*sql*/ `
+        SELECT * FROM tracks
+            WHERE tracks.tracksID=?;`; // sql query
   const values = [id];
 
-  dbConnection.query(query, values, (error, results, fields) => {
+  dbConnection.query(queryString, values, (error, results) => {
     if (error) {
       console.log(error);
     } else {
-      response.json(results);
+      response.json(results[0]);
     }
   });
 });
@@ -87,6 +89,14 @@ app.post("/tracks", (request, response) => {
     }
   });
 });
+
+// Update a track //
+
+// app.put("/tracks/:id" , (request, response) => {
+//   const trackID = request.params.id;
+//   const trackBody = request.body;
+
+// })
 
 //////// ALBUM ROUTS ////////
 
