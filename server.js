@@ -1,4 +1,4 @@
-import express, { response } from "express";
+import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
 import dbConnection from "./data/database.js";
@@ -16,7 +16,7 @@ app.listen(port, () => {
     `The sever is running on port http://127.0.0.1:${port}\nRasmus, Edith and Peter is proud of you\nEnjoy your day - You are doing a good job:)`
   );
 });
-
+//Github Actions
 //////// ARTIST ROUTES ////////
 
 app.get("/", (request, response) => {
@@ -103,9 +103,9 @@ app.post("/tracks", (request, response) => {
 // READ all albums
 app.get("/albums", (request, response) => {
   const query = "SELECT * FROM albums";
-  dbConnection.query(query, (error, results, fields) => {
-    if (error) {
-      console.log(error);
+  dbConnection.query(query, (err, results, fields) => {
+    if (err) {
+      console.log(err);
     } else {
       response.json(results);
     }
