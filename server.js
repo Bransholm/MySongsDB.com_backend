@@ -6,19 +6,21 @@ import { request } from "http";
 import { error } from "console";
 
 const app = express();
-const port = 4000;
+const port = process.env.port || 4000;
 
 app.use(express.json());
 app.use(cors());
 
 app.listen(port, () => {
-  console.log(`The sever is running on port ${port}\nEnjoy your day :)`);
+  console.log(
+    `The sever is running on port http://127.0.0.1:${port}\nRasmus, Edith and Peter is proud of you\nEnjoy your day - You are doing a good job:)`
+  );
 });
 
 //////// ARTIST ROUTES ////////
 
 app.get("/", (request, response) => {
-  response.send("");
+  response.send("MySongsDB.com");
 });
 
 app.get("/artist", (request, response) => {
