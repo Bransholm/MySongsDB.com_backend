@@ -23,8 +23,8 @@ app.get("/", (request, response) => {
   response.send("MySongsDB.com");
 });
 
-app.get("/artist", (request, response) => {
-  const query = "SELECT * FROM artist ORDER BY artistsName";
+app.get("/artists", (request, response) => {
+  const query = "SELECT * FROM artists ORDER BY artistName";
   dbConnection.query(query, (error, results, fields) => {
     if (error) {
       console.log(error);
@@ -50,11 +50,11 @@ app.get("/tracks", (request, response) => {
 
 // READ one track //
 
-app.get("/tracks/:tracksID", (request, response) => {
-  const id = request.params.tracksID;
+app.get("/tracks/:trackID", (request, response) => {
+  const id = request.params.trackID;
   const queryString = /*sql*/ `
         SELECT * FROM tracks
-            WHERE tracks.tracksID=?;`; // sql query
+            WHERE tracks.trackID=?;`; // sql query
   const values = [id];
 
   dbConnection.query(queryString, values, (error, results) => {
@@ -204,7 +204,7 @@ app.get("/albums/:id/tracks", (request, response) => {
   const id = request.params.id;
   const query = /*sql*/ `
   SELECT albums.albumName AS albumName,
-  tracks.tracksID AS trackID,
+  tracks.trackID AS trackID,
   tracks.trackName AS trackName,
   tracks.length AS trackLength,
   tracks.creationYear AS trackYear,
@@ -214,7 +214,7 @@ app.get("/albums/:id/tracks", (request, response) => {
   JOIN albums_tracks 
   ON albums.albumID = albums_tracks.album_ID
   JOIN tracks
-  ON tracks.tracksID = albums_tracks.track_ID
+  ON tracks.trackID = albums_tracks.track_ID
   WHERE albums.albumID = ?
   ORDER BY albums.albumName, tracks.trackName;
     `;
