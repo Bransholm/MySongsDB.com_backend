@@ -6,7 +6,7 @@ import { request } from "http";
 import { error } from "console";
 
 const app = express();
-const port = 3306;
+const port = process.env.port || 4000;
 
 app.use(express.json());
 app.use(cors());
