@@ -140,7 +140,7 @@ app.get("/albums/:id/tracks", (request, response) => {
   const id = request.params.id;
   const query = /*sql*/ `
   SELECT albums.albumName AS albumName,
-  tracks.trackID AS trackID,
+  tracks.tracksID AS trackID,
   tracks.trackName AS trackName,
   tracks.length AS trackLength,
   tracks.creationYear AS trackYear,
@@ -150,9 +150,9 @@ app.get("/albums/:id/tracks", (request, response) => {
   JOIN albums_tracks 
   ON albums.albumID = albums_tracks.album_ID
   JOIN tracks
-  ON tracks.trackID = albums_tracks.track_ID
+  ON tracks.tracksID = albums_tracks.track_ID
   WHERE albums.albumID = ?
-  ORDER BY albums.albumName, tracks.Name;
+  ORDER BY albums.albumName, tracks.trackName;
     `;
 
   const values = [id];
