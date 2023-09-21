@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
-//import dbConnection from "./data/database.js";
+import dbConnection from "./data/database.js";
 import { request } from "http";
 import { error } from "console";
 
@@ -16,7 +16,7 @@ app.listen(port, () => {
     `The sever is run on port http://127.0.0.1:${port}\nRasmus, Edith and Peter is proud of you\nEnjoy your day - You are doing a good job:)`
   );
 });
-//Github Actions
+
 //////// ARTIST ROUTES ////////
 
 app.get("/", (request, response) => {
