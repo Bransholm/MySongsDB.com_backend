@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
-import dbConnection from "./database.js";
+import dbConnection from "./data/database.js";
 import { request } from "http";
 import { error } from "console";
 
@@ -51,14 +51,14 @@ app.get("/albums", (request, response) => {
 // READ one albums
 app.get("/albums/:albumId", (request, response) => {
   const albumId = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-  const query = "SELECT * FROM users WHERE id=?";
+  const query = "SELECT * FROM albums WHERE id=?";
   const values = [albumId];
 
   dbConnection.query(query, values, (err, results, fields) => {
     if (err) {
       console.log(err);
     } else {
-      response.json(results[albumId]);
+      response.json(results[0]);
     }
   });
 });
