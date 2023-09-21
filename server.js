@@ -1,4 +1,4 @@
-import express, { response } from "express";
+import express from "express";
 import cors from "cors";
 import fs from "fs/promises";
 import dbConnection from "./data/database.js";
