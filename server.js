@@ -181,6 +181,39 @@ app.post("/albums", (request, response) => {
   });
 });
 
+// CREATE albums
+app.post("/albums/new", async (request, response) => {
+  const album = request.body;
+  console.log(album);
+
+  const albumQuery =
+    "INSERT INTO albums (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
+  const albumValues = [
+    album.albumName,
+    album.edition,
+    album.year,
+    album.albumImage,
+  ];
+
+  const [crossTable] = await dbConnection.execute(albumValues, albumQuery);
+
+  // ....hvor kommer insert id fra (Ja dette er en "dev note only").
+  const newAlbum = crossTable.insertId;
+
+  const artistQuery =
+    "INSER INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
+  const artistValue = [album.albumID, newAlbum.artistID];
+
+  const [aristsAlbumsResult] = await dbConnection.execute(
+    artistValue,
+    artistQuery
+  );
+
+  console.log(aristsAlbumsResult);
+
+  response.json({ message: "You created a new Album" });
+});
+
 // UPDATE albums
 app.put("/albums/:albumId", async (request, response) => {
   const albumID = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
@@ -231,6 +264,32 @@ app.get("/albums_tracks", (request, response) => {
     }
   });
 });
+
+// READ all albums
+app.get("/artists_tracks", (request, response) => {
+  const query = "SELECT * FROM artists_tracks";
+  dbConnection.query(query, (err, results, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
+// READ all albums
+app.get("/artists_albums", (request, response) => {
+  const query = "SELECT * FROM artists_albums";
+  dbConnection.query(query, (err, results, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
+
 
 //////// ------------- ALBUM MANY TO MANY ------------- ////////
 
