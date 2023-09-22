@@ -27,7 +27,7 @@ app.get("/", (request, response) => {
 
 // READ all artists
 app.get("/artists", (request, response) => {
-  const query = "SELECT * FROM artists ORDER BY artistName";
+  const query = "SELECT * FROM artists ORDER BY artistName;";
   dbConnection.query(query, (error, results, fields) => {
     if (error) {
       console.log(error);
@@ -36,6 +36,72 @@ app.get("/artists", (request, response) => {
     }
   });
 });
+
+
+// READ one user
+app.get("/artists/:id", (request, response) => {
+  const id = request.params.id;
+  const query = "SELECT * FROM artists WHERE artists.artistID=?";
+  const values = [id];
+
+  dbConnection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results[0]);
+    }
+  });
+});
+
+// // CREATE user
+// app.post("/users", (request, response) => {
+//   const user = request.body;
+//   const query = "INSERT INTO users(name, mail, title, image) values(?,?,?,?);";
+//   const values = [user.name, user.mail, user.title, user.image];
+  
+//   connection.query(query, values, (error, results, fields) => {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       response.json(results);
+//     }
+//   });
+// });
+
+
+
+// // UPDATE user
+// app.put("/users/:id", (request, response) => {
+//   const id = request.params.id;
+//   const user = request.body;
+//   const query = "UPDATE users SET name=?, mail=?, title=?, image=?;";
+//   const values = [user.name, user.mail, user.title, user.image];
+
+//   connection.query(query, values, (error, results, fields) => {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       response.json(results);
+//     }
+//   });
+// });
+
+
+
+// // DELETE user
+// app.delete("/users/:id", (request, response) => {
+//   const id = request.params.id;
+//   const query = "DELETE FROM users WHERE id=?;";
+//   const values = [id];
+
+//   connection.query(query, values, (error, results, fields) => {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       response.json(results);
+//     }
+//   });
+// });
 
 //////// TRACKS ROUTES ////////
 
