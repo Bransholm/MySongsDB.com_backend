@@ -17,12 +17,15 @@ app.listen(port, () => {
   );
 });
 
-//////// ARTIST ROUTES ////////
-
+//////// GENEREL ROUTES ////////
 app.get("/", (request, response) => {
   response.send("MySongsDB.com");
 });
 
+
+//////// ARTIST ROUTES ////////
+
+// READ all artists
 app.get("/artists", (request, response) => {
   const query = "SELECT * FROM artists ORDER BY artistName";
   dbConnection.query(query, (error, results, fields) => {
