@@ -69,7 +69,7 @@ app.get("/tracks/:trackID", (request, response) => {
 
 // Create a track //
 
-app.post("/tracks", (request, response) => {
+app.post("/tracks", async (request, response) => {
   const track = request.body;
   console.log(track);
 
@@ -82,13 +82,20 @@ app.post("/tracks", (request, response) => {
   const query =
     "INSERT INTO tracks (trackName, length, creationYear, genre) VALUES (?,?,?,?)";
 
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+  const [trackResult] = await dbConnection.execute(query, values);
+  const newTrackID = trackResult.insertId;
+
+  const trackQuery =
+    "INSERT INTO artists_tracks (artist_ID, track_ID) VALUES (?, ?)";
+  const trackValues = [track.artistID, newTrackID];
+
+  const [artistTrackResult] = await dbConnection.execute(
+    trackQuery,
+    trackValues
+  );
+  console.log(artistTrackResult);
+
+  response.json({ message: "A new song have been created" });
 });
 
 // Update a track //
