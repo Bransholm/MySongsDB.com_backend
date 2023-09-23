@@ -217,7 +217,7 @@ app.post("/albums", async (request, response) => {
       trackQuery,
       trackValue
     );
-    
+
     console.log(albumsTracskResults);
 
     response.json({ message: "You created a new Album" });
@@ -231,7 +231,6 @@ app.post("/albums", async (request, response) => {
 app.put("/albums/:albumId", async (request, response) => {
   const albumID = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
   const albumBody = request.body;
-  console.log(albumBody);
 
   const values = [
     albumBody.albumName,
@@ -242,13 +241,9 @@ app.put("/albums/:albumId", async (request, response) => {
   ];
   const query =
     "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
-  dbConnection.query(query, values, (err, results, fields) => {
-    if (err) {
-      console.log(err);
-    } else {
-      response.json(results);
-    }
-  });
+
+  const [updatedAlbum] = await dbConnection.execute(query, values);
+  response.json(updatedAlbum);
 });
 
 // DELETE albums
