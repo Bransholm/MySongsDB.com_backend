@@ -237,24 +237,8 @@ app.get("/albums/:id", async (request, response) => {
 });
 
 // CREATE albums
-// app.post("/albums", (request, response) => {
-//   const album = request.body;
-//   console.log(album);
+//
 
-//   const values = [album.albumName, album.edition, album.year, album.albumImage];
-//   const query =
-//     "INSERT INTO albums (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
-
-//   dbConnection.query(query, values, (err, results, fields) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       response.json(results);
-//     }
-//   });
-// });
-
-// CREATE albums
 app.post("/albums", async (request, response) => {
   const album = request.body;
 
@@ -268,32 +252,40 @@ app.post("/albums", async (request, response) => {
   ];
 
   try {
-    const [rows, fields] = await dbConnection.execute(albumQuery, albumValues);
+    // Create a new album in the albums table
+    const [newAlbum] = await dbConnection.execute(albumQuery, albumValues);
+    console.log(newAlbum);
 
-    // ....hvor kommer insert id fra (Ja dette er en "dev note only").
-    const newAlbumID = rows.insertId;
+    // Get the newly created albumID
+    const newAlbumID = newAlbum.insertId;
 
-    const artistQuery =
-      "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
-    const artistValue = [album.artistID, newAlbumID];
+    for (const artist of album.artistIds) {
+      console.log(artist);
 
-    const [aristsAlbumsResult, fields2] = await dbConnection.execute(
-      artistQuery,
-      artistValue
-    );
+      const artistQuery =
+        "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
 
-    console.log(aristsAlbumsResult);
+      const artistValue = [artist, newAlbumID];
 
-    const trackQuery =
-      "INSERT INTO albums_tracks (album_ID, track_ID) VALUES (?,?)";
-    const trackValue = [newAlbumID, album.trackID];
+      const [aristsAlbumsResult] = await dbConnection.execute(
+        artistQuery,
+        artistValue
+      );
+      console.log(aristsAlbumsResult);
+    }
 
-    const [albumsTracskResults, fields3] = await dbConnection.execute(
-      trackQuery,
-      trackValue
-    );
+    for (const track of album.trackIds) {
+      console.log(track);
+      const trackQuery =
+        "INSERT INTO albums_tracks (album_ID, track_ID) VALUES (?,?)";
+      const trackValue = [newAlbumID, track];
 
-    console.log(albumsTracskResults);
+      const [albumsTracskResults] = await dbConnection.execute(
+        trackQuery,
+        trackValue
+      );
+      console.log(albumsTracskResults);
+    }
 
     response.json({ message: "You created a new Album" });
   } catch (error) {
