@@ -117,6 +117,7 @@ app.delete("/artists/:id", async (request, response) => {
   }
 });
 
+
 //////// TRACKS ROUTES ////////
 
 // READ all tracks //
@@ -133,20 +134,30 @@ app.get("/tracks", async (request, response) => {
 
 
 // READ one track //
-
 app.get("/tracks/:trackID", async (request, response) => {
-  const id = request.params.trackID;
-  const queryString = /*sql*/ `
-        SELECT * FROM tracks
-            WHERE tracks.trackID=?;`; // sql query
-  const values = [id];
+  try {
+    const id = request.params.trackID;
+    const queryString = /*sql*/ `
+      SELECT * FROM tracks
+      WHERE tracks.trackID=?;`; // sql query
+    const values = [id];
 
-  const [trackIdResult] = await dbConnection.execute(queryString, values);
-  response.json(trackIdResult);
+    const [trackIdResult] = await dbConnection.execute(queryString, values);
+    if (trackIdResult.length === 0) {
+      response
+        .status(404)
+        .json({ error: `The artist with the id ${id} does not exist` });
+    } else {
+      response.json(trackIdResult[0]);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-// Create a track //
 
+// Create a track //
 app.post("/tracks", async (request, response) => {
   const track = request.body;
   console.log(track);
