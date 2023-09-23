@@ -121,10 +121,16 @@ app.delete("/artists/:id", async (request, response) => {
 
 // READ all tracks //
 app.get("/tracks", async (request, response) => {
-  const query = "SELECT * FROM tracks ORDER by trackName";
-  const [trackResult] = await dbConnection.execute(query);
-  response.json(trackResult);
+  try {
+    const query = "SELECT * FROM tracks ORDER BY trackName";
+    const [trackResult] = await dbConnection.execute(query);
+    response.json(trackResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 
 // READ one track //
 
