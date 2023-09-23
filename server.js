@@ -252,13 +252,8 @@ app.delete("/albums/:albumId", async (request, response) => {
   const values = [id];
   const query = "DELETE FROM albums WHERE albumID=?";
 
-  dbConnection.query(query, values, (err, results, fields) => {
-    if (err) {
-      console.log(err);
-    } else {
-      response.json(results);
-    }
-  });
+  const [albums] = await dbConnection.query(query, values);
+  response.json(albums);
 });
 
 // READ all albums
