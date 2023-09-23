@@ -157,13 +157,8 @@ app.get("/albums/:id", async (request, response) => {
             WHERE albums.albumID=?;`; // sql query
   const values = [id];
 
-  dbConnection.query(queryString, values, (error, results) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results[0]);
-    }
-  });
+  const [albumIdResult] = await dbConnection.execute(queryString, values);
+  response.json(albumIdResult);
 });
 
 // CREATE albums
@@ -213,6 +208,17 @@ app.post("/albums", async (request, response) => {
     );
 
     console.log(aristsAlbumsResult);
+
+    const trackQuery =
+      "INSERT INTO albums_tracks (album_ID, track_ID) VALUES (?,?)";
+    const trackValue = [newAlbumID, album.trackID];
+
+    const [albumsTracskResults, fields3] = await dbConnection.execute(
+      trackQuery,
+      trackValue
+    );
+    
+    console.log(albumsTracskResults);
 
     response.json({ message: "You created a new Album" });
   } catch (error) {
