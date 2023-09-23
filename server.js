@@ -4,7 +4,6 @@ import fs from "fs/promises";
 import dbConnection from "./data/database.js";
 import { request } from "http";
 import { error } from "console";
-// import mysql from "mysql2/promise";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -330,12 +329,22 @@ app.get("/albums/:id/tracks", (request, response) => {
 
 //////// CROSS TABLE ROUTES ////////
 
-// Laver en nyt field i krydstabellen --
+// Laver en nyt field i krydstabellen - aritst_albums
 app.post("/artists_albums", async (request, response) => {
-  const uptadeBody = request.params.body;
-  console.log(uptadeBody);
+  const uptadeBody = request.body;
   const query = /*sql*/ `INSERT INTO artists_albums (artist_ID, album_ID) VALUES(?,?) `;
   const values = [uptadeBody.artistID, uptadeBody.albumID];
-  const [result] = dbConnection.execute(query, values);
-  response.json(result);
+  const [crossTrackResult] = await dbConnection.execute(query, values);
+  response.json(crossTrackResult);
 });
+
+// Laver en nyt field i krydstabellen - artists_tracks
+// app.post("/artists_tracks", async (request, response) => {
+//   const crossTableBody = request.body;
+//   console.log(crossTableBody);
+//   const query = /*sql*/ `INSERT INTO artists_tracks (artist_ID, track_ID) VALUES(?,?) `;
+//   const values = [crossTableBody.artistID, crossTableBody.trackID];
+//   const [crossTrackResult] = await dbConnection.execute(query, values);
+//   console.log(crossTrackResult);
+//   response.json(crossTrackResult);
+// });
