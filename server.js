@@ -26,89 +26,96 @@ app.get("/", (request, response) => {
 //////// ARTIST ROUTES ////////
 
 // READ all artists
-app.get("/artists", (request, response) => {
-  const query = "SELECT * FROM artists ORDER BY artistName;";
-  dbConnection.query(query, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+app.get("/artists", async (request, response) => {
+  try {
+    const query = "SELECT * FROM artists ORDER BY artistName;";
+    const [artistResult] = await dbConnection.execute(query);
+    response.json(artistResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // READ artist by id
-app.get("/artists/:id", (request, response) => {
-  const id = request.params.id;
-  const query = "SELECT * FROM artists WHERE artists.artistID=?";
-  const values = [id];
+app.get("/artists/:id", async (request, response) => {
+  try {
+    const id = request.params.id;
+    const query = "SELECT * FROM artists WHERE artists.artistID=?";
+    const values = [id];
 
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
+    const [artistResult] = await dbConnection.execute(query, values);
+
+    if (artistResult.length === 0) {
+      response
+        .status(404)
+        .json({ error: `The artist with the id ${id} does not exist` });
     } else {
-      response.json(results[0]);
+      response.json(artistResult[0]);
     }
-  });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // CREATE artist
-app.post("/artists", (request, response) => {
-  const artist = request.body;
-  const query =
-    "INSERT INTO artists (artistName, birthdate, activeSince, artistImage) values(?,?,?,?);";
-  const values = [
-    artist.artistName,
-    artist.birthdate,
-    artist.activeSince,
-    artist.artistImage,
-  ];
+app.post("/artists", async (request, response) => {
+  try {
+    const artist = request.body;
+    const query =
+      "INSERT INTO artists (artistName, birthdate, activeSince, artistImage) VALUES (?,?,?,?);";
+    const values = [
+      artist.artistName,
+      artist.birthdate,
+      artist.activeSince,
+      artist.artistImage,
+    ];
 
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+    const insertResult = await dbConnection.execute(query, values);
+    response.json(insertResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // UPDATE artist
-app.put("/artists/:id", (request, response) => {
-  const artistID = request.params.id;
-  const artistBody = request.body;
-  const query =
-    "UPDATE artists SET artistName=?, birthdate=?, activeSince=?, artistImage=? WHERE artistID=?;";
-  const values = [
-    artistBody.artistName,
-    artistBody.birthdate,
-    artistBody.activeSince,
-    artistBody.artistImage,
-    artistID,
-  ];
+app.put("/artists/:id", async (request, response) => {
+  try {
+    const artistID = request.params.id;
+    const artistBody = request.body;
+    const query =
+      "UPDATE artists SET artistName=?, birthdate=?, activeSince=?, artistImage=? WHERE artistID=?;";
+    const values = [
+      artistBody.artistName,
+      artistBody.birthdate,
+      artistBody.activeSince,
+      artistBody.artistImage,
+      artistID,
+    ];
 
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+    const updateResult = await dbConnection.execute(query, values);
+    response.json(updateResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // DELETE artist
-app.delete("/artists/:id", (request, response) => {
-  const id = request.params.id;
-  const query = "DELETE FROM artists WHERE artistID=?;";
-  const values = [id];
+app.delete("/artists/:id", async (request, response) => {
+  try {
+    const id = request.params.id;
+    const query = "DELETE FROM artists WHERE artistID=?;";
+    const values = [id];
 
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+    const deleteResult = await dbConnection.execute(query, values);
+    response.json(deleteResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 //////// TRACKS ROUTES ////////
