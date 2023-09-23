@@ -13,7 +13,7 @@ app.use(cors());
 
 app.listen(port, () => {
   console.log(
-    `The sever is run on port http://127.0.0.1:${port}\nRasmus, Edith and Peter is proud of you\nEnjoy your day - You are doing a good job:)`
+    `The sever is running on port http://127.0.0.1:${port}\nRasmus, Edith and Peter is proud of you\nEnjoy your day - You are doing a good job:)`
   );
 });
 
@@ -53,21 +53,26 @@ app.get("/artists/:id", (request, response) => {
   });
 });
 
-// // CREATE user
-// app.post("/users", (request, response) => {
-//   const user = request.body;
-//   const query = "INSERT INTO users(name, mail, title, image) values(?,?,?,?);";
-//   const values = [user.name, user.mail, user.title, user.image];
+// CREATE artist
+app.post("/artists", (request, response) => {
+  const artist = request.body;
+  const query =
+    "INSERT INTO artists (artistName, birthdate, activeSince, artistImage) values(?,?,?,?);";
+  const values = [
+    artist.artistName,
+    artist.birthdate,
+    artist.activeSince,
+    artist.artistImage
+  ];
   
-//   connection.query(query, values, (error, results, fields) => {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       response.json(results);
-//     }
-//   });
-// });
-
+  dbConnection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
 
 
 // // UPDATE user
