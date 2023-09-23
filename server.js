@@ -61,24 +61,24 @@ app.get("/artists/:id", async (request, response) => {
 
 
 // CREATE artist
-app.post("/artists", (request, response) => {
-  const artist = request.body;
-  const query =
-    "INSERT INTO artists (artistName, birthdate, activeSince, artistImage) values(?,?,?,?);";
-  const values = [
-    artist.artistName,
-    artist.birthdate,
-    artist.activeSince,
-    artist.artistImage
-  ];
-  
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+app.post("/artists", async (request, response) => {
+  try {
+    const artist = request.body;
+    const query =
+      "INSERT INTO artists (artistName, birthdate, activeSince, artistImage) VALUES (?,?,?,?);";
+    const values = [
+      artist.artistName,
+      artist.birthdate,
+      artist.activeSince,
+      artist.artistImage,
+    ];
+
+    const insertResult = await dbConnection.execute(query, values);
+    response.json(insertResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 
