@@ -1,4 +1,4 @@
-import mysql from "mysql2";
+import mysql from "mysql2/promise";
 import "dotenv/config";
 import fs from "fs/promises";
 
@@ -18,6 +18,6 @@ if (process.env.MYSQL_CERT) {
 }
 
 // Create connection to the database
-const dbConnection = mysql.createConnection(dbConfig);
+const dbConnection = await mysql.createConnection(dbConfig);
 
 export default dbConnection;
