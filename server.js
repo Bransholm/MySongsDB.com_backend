@@ -27,17 +27,42 @@ app.get("/", (request, response) => {
 //////// ARTIST ROUTES ////////
 
 // READ all artists
-app.get("/artists", (request, response) => {
-  const query = "SELECT * FROM artists ORDER BY artistName;";
-  dbConnection.query(query, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+
+app.get("/artists", async (request, response) => {
+  try {
+    const query = "SELECT * FROM artists ORDER BY artistName;";
+    const [artistResult] = await dbConnection.execute(query);
+    response.json(artistResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
+
+// app.get("/artists", async (request, response) => {
+//   const query = "SELECT * FROM artists ORDER BY artistName;";
+//   const [artistResult] = await dbConnection.execute(query, (error, results, fields) => {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       response.json(artistResult);
+//     }
+//   });
+
+
+// });
+
+// app.get("/artists", (request, response) => {
+//   const query = "SELECT * FROM artists ORDER BY artistName;";
+//   dbConnection.query(query, (error, results, fields) => {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       response.json(results);
+//     }
+//   });
+// });
 
 // READ artist by id
 app.get("/artists/:id", (request, response) => {
