@@ -27,7 +27,6 @@ app.get("/", (request, response) => {
 //////// ARTIST ROUTES ////////
 
 // READ all artists
-
 app.get("/artists", async (request, response) => {
   try {
     const query = "SELECT * FROM artists ORDER BY artistName;";
@@ -40,44 +39,26 @@ app.get("/artists", async (request, response) => {
 });
 
 
-// app.get("/artists", async (request, response) => {
-//   const query = "SELECT * FROM artists ORDER BY artistName;";
-//   const [artistResult] = await dbConnection.execute(query, (error, results, fields) => {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       response.json(artistResult);
-//     }
-//   });
-
-
-// });
-
-// app.get("/artists", (request, response) => {
-//   const query = "SELECT * FROM artists ORDER BY artistName;";
-//   dbConnection.query(query, (error, results, fields) => {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       response.json(results);
-//     }
-//   });
-// });
-
 // READ artist by id
-app.get("/artists/:id", (request, response) => {
-  const id = request.params.id;
-  const query = "SELECT * FROM artists WHERE artists.artistID=?";
-  const values = [id];
+app.get("/artists/:id", async (request, response) => {
+  try {
+    const id = request.params.id;
+    const query = "SELECT * FROM artists WHERE artists.artistID=?";
+    const values = [id];
 
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
+    const [artistResult] = await dbConnection.execute(query, values);
+
+    if (artistResult.length === 0) {
+      response.status(404).json({ error: `The artist with the id ${id} does not exist` });
     } else {
-      response.json(results[0]);
+      response.json(artistResult[0]);
     }
-  });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 
 // CREATE artist
 app.post("/artists", (request, response) => {
