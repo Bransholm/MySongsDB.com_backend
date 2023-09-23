@@ -145,7 +145,14 @@ app.delete("/tracks/:trackID", async (request, response) => {
 app.get("/albums", async (request, response) => {
   const query = "SELECT * FROM albums";
   const [albumResult] = await dbConnection.execute(query);
-  response.json(albumResult);
+
+  if (!albumResult) {
+    response
+      .status(500)
+      .json({ message: "An Internal Server Error Has Occured" });
+  } else {
+    response.json(albumResult);
+  }
 });
 
 // READ one albums
@@ -337,14 +344,3 @@ app.post("/artists_albums", async (request, response) => {
   const [crossTrackResult] = await dbConnection.execute(query, values);
   response.json(crossTrackResult);
 });
-
-// Laver en nyt field i krydstabellen - artists_tracks
-// app.post("/artists_tracks", async (request, response) => {
-//   const crossTableBody = request.body;
-//   console.log(crossTableBody);
-//   const query = /*sql*/ `INSERT INTO artists_tracks (artist_ID, track_ID) VALUES(?,?) `;
-//   const values = [crossTableBody.artistID, crossTableBody.trackID];
-//   const [crossTrackResult] = await dbConnection.execute(query, values);
-//   console.log(crossTrackResult);
-//   response.json(crossTrackResult);
-// });
