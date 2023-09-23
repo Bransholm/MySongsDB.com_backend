@@ -193,27 +193,35 @@ app.post("/tracks", async (request, response) => {
   }
 });
 
+
 // Update a track //
-
 app.put("/tracks/:trackID", async (request, response) => {
-  const trackID = request.params.trackID;
-  const trackBody = request.body;
+  try {
+    const trackID = request.params.trackID;
+    const trackBody = request.body;
 
-  console.log(trackID);
-  console.log(trackBody);
+    const values = [
+      trackBody.trackName,
+      trackBody.length,
+      trackBody.creationYear,
+      trackBody.genre,
+      trackID,
+    ];
+    const query =
+      "UPDATE tracks SET trackName=?, length=?, creationYear=?, genre=? WHERE trackID=?";
+    const [updatedTrack] = await dbConnection.execute(query, values);
 
-  const values = [
-    trackBody.trackName,
-    trackBody.length,
-    trackBody.creationYear,
-    trackBody.genre,
-    trackID,
-  ];
-  const query =
-    "UPDATE tracks SET trackName=?, length=?, creationYear=?, genre=? WHERE trackID=?";
-  const [updatedTrack] = await dbConnection.execute(query, values);
-  response.json(updatedTrack);
+    if (updatedTrack.affectedRows === 0) {
+      response.status(404).json({ error: "Track not found" });
+    } else {
+      response.json(updatedTrack);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 
 // DELETE a track //
 app.delete("/tracks/:trackID", async (request, response) => {
