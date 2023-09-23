@@ -83,26 +83,26 @@ app.post("/artists", async (request, response) => {
 
 
 // UPDATE artist
-app.put("/artists/:id", (request, response) => {
-  const artistID = request.params.id;
-  const artistBody = request.body;
-  const query =
-    "UPDATE artists SET artistName=?, birthdate=?, activeSince=?, artistImage=? WHERE artistID=?;";
-  const values = [
-    artistBody.artistName,
-    artistBody.birthdate,
-    artistBody.activeSince,
-    artistBody.artistImage,
-    artistID
-  ];
+app.put("/artists/:id", async (request, response) => {
+  try {
+    const artistID = request.params.id;
+    const artistBody = request.body;
+    const query =
+      "UPDATE artists SET artistName=?, birthdate=?, activeSince=?, artistImage=? WHERE artistID=?;";
+    const values = [
+      artistBody.artistName,
+      artistBody.birthdate,
+      artistBody.activeSince,
+      artistBody.artistImage,
+      artistID,
+    ];
 
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+    const updateResult = await dbConnection.execute(query, values);
+    response.json(updateResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 
