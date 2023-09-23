@@ -38,7 +38,7 @@ app.get("/artists", (request, response) => {
 });
 
 
-// READ one user
+// READ artist by id
 app.get("/artists/:id", (request, response) => {
   const id = request.params.id;
   const query = "SELECT * FROM artists WHERE artists.artistID=?";
@@ -75,7 +75,7 @@ app.post("/artists", (request, response) => {
 });
 
 
-// UPDATE user
+// UPDATE artist
 app.put("/artists/:id", (request, response) => {
   const artistID = request.params.id;
   const artistBody = request.body;
@@ -99,20 +99,21 @@ app.put("/artists/:id", (request, response) => {
 });
 
 
-// // DELETE user
-// app.delete("/users/:id", (request, response) => {
-//   const id = request.params.id;
-//   const query = "DELETE FROM users WHERE id=?;";
-//   const values = [id];
+// DELETE artist
+app.delete("/artists/:id", (request, response) => {
+  const id = request.params.id;
+  const query = "DELETE FROM artists WHERE artistID=?;";
+  const values = [id];
 
-//   connection.query(query, values, (error, results, fields) => {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       response.json(results);
-//     }
-//   });
-// });
+  dbConnection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
 
 //////// TRACKS ROUTES ////////
 
