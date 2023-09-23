@@ -237,7 +237,7 @@ app.put("/albums/:albumId", async (request, response) => {
     albumBody.edition,
     albumBody.year,
     albumBody.albumImage,
-    albumID,
+    albumID
   ];
   const query =
     "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
@@ -269,15 +269,10 @@ app.get("/albums_tracks", (request, response) => {
 });
 
 // READ all albums
-app.get("/artists_tracks", (request, response) => {
+app.get("/artists_tracks", async (request, response) => {
   const query = "SELECT * FROM artists_tracks";
-  dbConnection.query(query, (err, results, fields) => {
-    if (err) {
-      console.log(err);
-    } else {
-      response.json(results);
-    }
-  });
+  const [results] = await dbConnection.execute(query);
+  response.json(results);
 });
 
 // READ all albums
