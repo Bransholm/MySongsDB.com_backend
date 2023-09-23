@@ -237,7 +237,7 @@ app.put("/albums/:albumId", async (request, response) => {
     albumBody.edition,
     albumBody.year,
     albumBody.albumImage,
-    albumID
+    albumID,
   ];
   const query =
     "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
@@ -326,4 +326,16 @@ app.get("/albums/:id/tracks", (request, response) => {
       }
     }
   });
+});
+
+//////// CROSS TABLE ROUTES ////////
+
+// Laver en nyt field i krydstabellen --
+app.post("/artists_albums", async (request, response) => {
+  const uptadeBody = request.params.body;
+  console.log(uptadeBody);
+  const query = /*sql*/ `INSERT INTO artists_albums (artist_ID, album_ID) VALUES(?,?) `;
+  const values = [uptadeBody.artistID, uptadeBody.albumID];
+  const [result] = dbConnection.execute(query, values);
+  response.json(result);
 });
