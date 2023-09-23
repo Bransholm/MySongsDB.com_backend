@@ -107,19 +107,20 @@ app.put("/artists/:id", async (request, response) => {
 
 
 // DELETE artist
-app.delete("/artists/:id", (request, response) => {
-  const id = request.params.id;
-  const query = "DELETE FROM artists WHERE artistID=?;";
-  const values = [id];
+app.delete("/artists/:id", async (request, response) => {
+  try {
+    const id = request.params.id;
+    const query = "DELETE FROM artists WHERE artistID=?;";
+    const values = [id];
 
-  dbConnection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+    const deleteResult = await dbConnection.execute(query, values);
+    response.json(deleteResult);
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 
 
 //////// TRACKS ROUTES ////////
