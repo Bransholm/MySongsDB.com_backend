@@ -75,22 +75,28 @@ app.post("/artists", (request, response) => {
 });
 
 
-// // UPDATE user
-// app.put("/users/:id", (request, response) => {
-//   const id = request.params.id;
-//   const user = request.body;
-//   const query = "UPDATE users SET name=?, mail=?, title=?, image=?;";
-//   const values = [user.name, user.mail, user.title, user.image];
+// UPDATE user
+app.put("/artists/:id", (request, response) => {
+  const artistID = request.params.id;
+  const artistBody = request.body;
+  const query =
+    "UPDATE artists SET artistName=?, birthdate=?, activeSince=?, artistImage=? WHERE artistID=?;";
+  const values = [
+    artistBody.artistName,
+    artistBody.birthdate,
+    artistBody.activeSince,
+    artistBody.artistImage,
+    artistID
+  ];
 
-//   connection.query(query, values, (error, results, fields) => {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       response.json(results);
-//     }
-//   });
-// });
-
+  dbConnection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
 
 
 // // DELETE user
