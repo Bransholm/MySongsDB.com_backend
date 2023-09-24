@@ -117,7 +117,6 @@ app.delete("/artists/:id", async (request, response) => {
   }
 });
 
-
 //////// TRACKS ROUTES ////////
 
 // READ all tracks //
@@ -131,7 +130,6 @@ app.get("/tracks", async (request, response) => {
     response.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // READ one track //
 app.get("/tracks/:trackID", async (request, response) => {
@@ -155,7 +153,6 @@ app.get("/tracks/:trackID", async (request, response) => {
     response.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // Create a track //
 app.post("/tracks", async (request, response) => {
@@ -193,7 +190,6 @@ app.post("/tracks", async (request, response) => {
   }
 });
 
-
 // Update a track //
 app.put("/tracks/:trackID", async (request, response) => {
   try {
@@ -222,7 +218,6 @@ app.put("/tracks/:trackID", async (request, response) => {
   }
 });
 
-
 // DELETE a track //
 app.delete("/tracks/:trackID", async (request, response) => {
   try {
@@ -245,7 +240,6 @@ app.delete("/tracks/:trackID", async (request, response) => {
   }
 });
 
-
 //////// ALBUM ROUTS ////////
 
 // READ all albums
@@ -262,7 +256,6 @@ app.get("/albums", async (request, response) => {
   }
 });
 
-
 // READ one albums
 app.get("/albums/:id", async (request, response) => {
   try {
@@ -274,7 +267,9 @@ app.get("/albums/:id", async (request, response) => {
 
     const [albumIdResult] = await dbConnection.execute(queryString, values);
     if (albumIdResult.length === 0) {
-      response.status(404).json({ error: `The album with the id ${id} does not exsists` });
+      response
+        .status(404)
+        .json({ error: `The album with the id ${id} does not exsists` });
     } else {
       response.json(albumIdResult[0]);
     }
@@ -283,7 +278,6 @@ app.get("/albums/:id", async (request, response) => {
     response.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // CREATE albums
 app.post("/albums", async (request, response) => {
@@ -341,7 +335,6 @@ app.post("/albums", async (request, response) => {
   }
 });
 
-
 // UPDATE albums
 app.put("/albums/:albumId", async (request, response) => {
   try {
@@ -361,7 +354,9 @@ app.put("/albums/:albumId", async (request, response) => {
     const [updatedAlbum] = await dbConnection.execute(query, values);
 
     if (updatedAlbum.affectedRows === 0) {
-      response.status(404).json({ error: `The album with the id ${id} does not exsists` });
+      response
+        .status(404)
+        .json({ error: `The album with the id ${id} does not exsists` });
     } else {
       response.json(updatedAlbum);
     }
@@ -373,17 +368,31 @@ app.put("/albums/:albumId", async (request, response) => {
 
 // DELETE albums and the crosstable fields it belongs to.
 app.delete("/albums/:albumId", async (request, response) => {
+  const albumID = request.params.albumId;
+  const albumValues = [albumID];
   try {
-    const albumID = request.params.albumId;
-    const values = [albumID];
-    const query = "DELETE FROM albums WHERE albumID=?";
+    //@@@@@ her skal der være noget der også delete i krydstabellerne @@@@@@@
+    const albumsTracksQuery = `DELETE FROM albums_tracks WHERE album_ID = ${albumID};`;
+    const [albumtrack] = await dbConnection.query(
+      albumsTracksQuery,
+      albumValues
+    );
 
-    const [deletedAlbums] = await dbConnection.query(query, values);
+    const artistAlbumtQuery = `DELETE FROM artists_albums WHERE album_ID = ${albumID};`;
+    const [artistAlbum] = await dbConnection.query(
+      artistAlbumtQuery,
+      albumValues
+    );
 
-    if (deletedAlbums.affectedRows === 0) {
-      response.status(404).json({ error: `The album with the id ${id} does not exsists` });
+    const albumQuery = "DELETE FROM albums WHERE albumID=?";
+    const [albums] = await dbConnection.query(albumQuery, albumValues);
+
+    if (albums.affectedRows === 0) {
+      response
+        .status(404)
+        .json({ error: `The album with the id ${id} does not exsists` });
     } else {
-      response.json(deletedAlbums);
+      response.json(albumtrack, artistAlbum, albums);
     }
   } catch (error) {
     console.error(error);
