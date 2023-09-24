@@ -460,16 +460,13 @@ app.get("/search", async (request, response) => {
 
     if (searchType === "trackName") {
       query = "SELECT * from tracks WHERE trackName LIKE ?";
-    } else if (searchTerm === "genre") {
+    } else if (searchType === "genre") {
       query = "SELECT * from tracks WHERE genre LIKE ?";
     } else {
       return response.status(400).json({ error: "Invalid search type" });
     }
     // Vi laver en query til databasen som prøver at matche det som der søges på med det som står i databasen
-    const [rows] = await dbConnection.query(
-      "SELECT * from tracks WHERE trackName LIKE ?",
-      [`%${searchTerm}%`]
-    );
+    const [rows] = await dbConnection.query(query, [`%${searchTerm}%`]);
     response.json({ tracks: rows });
   } catch (error) {
     console.error(
@@ -502,3 +499,60 @@ app.get("/search", async (request, response) => {
 //       .json({ error: "An error occurred while searching for tracks" });
 //   }
 // });
+
+// ARTIST SEARCH //
+
+app.get("/search", async (request, response) => {
+  try {
+    const searchType = request.query.type;
+    const searchTerm = request.query.q;
+
+    let query = "";
+
+    if (searchType === "artistName") {
+      query = "SELECT * from artists WHERE artistName LIKE ?";
+    } else if (searchType === "activeSince") {
+      query = "SELECT * from artists WHERE activeSince LIKE ?";
+    } else {
+      return response.status(400).json({ error: "Invalid search type" });
+    }
+
+    const [rows] = await dbConnection.query(query, [`%${searchTerm}%`]);
+    response.json({ artists: rows });
+  } catch (error) {
+    console.error("There was an error when attempting to search", error);
+    response
+      .status(500)
+      .json({ error: "An error occurred while searching for artists" });
+  }
+});
+
+// ALBUM SEARCH //
+
+app.get("/search", async (request, response) => {
+  try {
+    const searchType = request.query.type;
+    const searchTerm = request.query.q;
+
+    let query = "";
+
+    if (searchType === "albumName") {
+      query = "SELECT * from albums WHERE albumName LIKE ?";
+    } else if (searchType === "edition") {
+      query = "SELECT * from albums WHERE edition LIKE ?";
+    } else {
+      return response.status(400).json({ error: "Invalid search type" });
+    }
+
+    const [rows] = await dbConnection.query(query, [`%${searchTerm}%`]);
+    response.json({ albums: rows });
+  } catch (error) {
+    console.error(
+      "There was an error whent attempting to search for albums",
+      error
+    );
+    response
+      .status(500)
+      .json({ error: "An error occurred while searching for artists" });
+  }
+});
