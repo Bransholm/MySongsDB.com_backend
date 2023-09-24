@@ -285,36 +285,6 @@ app.get("/albums/:id", async (request, response) => {
 });
 
 
-// app.get("/albums/:id", async (request, response) => {
-//   const id = request.params.id;
-//   const queryString = /*sql*/ `
-//         SELECT * FROM albums
-//             WHERE albums.albumID=?;`; // sql query
-//   const values = [id];
-
-//   const [albumIdResult] = await dbConnection.execute(queryString, values);
-//   response.json(albumIdResult);
-// });
-
-
-// CREATE albums
-// app.post("/albums", (request, response) => {
-//   const album = request.body;
-//   console.log(album);
-
-//   const values = [album.albumName, album.edition, album.year, album.albumImage];
-//   const query =
-//     "INSERT INTO albums (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
-
-//   dbConnection.query(query, values, (err, results, fields) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       response.json(results);
-//     }
-//   });
-// });
-
 // CREATE albums
 app.post("/albums", async (request, response) => {
   const album = request.body;
