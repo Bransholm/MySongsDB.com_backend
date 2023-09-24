@@ -270,7 +270,6 @@ app.post("/albums", async (request, response) => {
     const newAlbumID = newAlbum.insertId;
 
     for (const artist of album.artistIds) {
-
       const artistQuery =
         "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
 
@@ -644,6 +643,40 @@ function deleteAlbum() {
       } else {
         response.json(albumtrack, artistAlbum, albums);
       }
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+}
+
+//////// Artists FUNCTIONS ////////
+
+function deleteArtist() {
+  return async (request, response) => {
+    try {
+      const artistID = request.params.id;
+      const artistsValue = [artistID];
+
+      // Delete all fields with given artist foreignkeys from (artists_tracks)
+      const deleteArtistsTrackQuery = `DELETE FROM artists_tracks WHERE artist_ID = ${artistID}`;
+      const [deleteArtistsTrack] = await dbConnection.execute(
+        deleteArtistsTrackQuery,
+        artistsValue
+      );
+
+      // Delete all fields with given artist foreignkeys from (artists_albums)
+      const deleteArtistAlbumQuery = `DELETE FROM artists_albums WHERE artist_ID = ${artistID}`;
+      const [deletealbumTrack] = await dbConnection.execute(
+        deleteArtistAlbumQuery,
+        artistsValue
+      );
+
+      // Delete the artists from (artists)
+      const query = "DELETE FROM artists WHERE artistID=?;";
+      const deleteResult = await dbConnection.execute(query, artistsValue);
+
+      response.json(deleteArtistsTrack, deletealbumTrack, deleteResult);
     } catch (error) {
       console.error(error);
       response.status(500).json({ error: "Internal Server Error" });
