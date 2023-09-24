@@ -105,12 +105,22 @@ app.put("/artists/:id", async (request, response) => {
 // DELETE artist
 app.delete("/artists/:id", async (request, response) => {
   try {
-    const id = request.params.id;
-    const query = "DELETE FROM artists WHERE artistID=?;";
-    const values = [id];
+    const artistID = request.params.id;
+    const value = [artistID];
 
-    const deleteResult = await dbConnection.execute(query, values);
-    response.json(deleteResult);
+    // ...
+    const deleteArtistsTrackQuery = `DELETE FROM artists_tracks WHERE artist_ID = ${artistID}`;
+    const [deleteArtistsTrack] = db.execute(deleteArtistsTrackQuery, value);
+
+    //...
+
+    const deleteAlbumsTracksQuery = `DELETE FROM albums_tracks WHERE artists_ID = ${artistID}`;
+    const [deleteAlbumsTracks] = db.execute(deleteAlbumsTracksQuery, value);
+
+    const query = "DELETE FROM artists WHERE artistID=?;";
+    const deleteResult = await dbConnection.execute(query, value);
+
+    response.json(deleteArtistsTrack, deleteAlbumsTracks, deleteResult);
   } catch (error) {
     console.error(error);
     response.status(500).json({ error: "Internal Server Error" });
