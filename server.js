@@ -229,7 +229,7 @@ app.put("/tracks/:trackID", async (request, response) => {
 });
 
 // DELETE a track //
-app.delete("/tracks/:trackID", delteTrack());
+app.delete("/tracks/:trackID", deleteTrack());
 
 //////// ALBUM ROUTS ////////
 
@@ -597,7 +597,7 @@ app.get("/search", async (request, response) => {
 
 //////// TRACK FUNCTIONS ////////
 
-function delteTrack() {
+function deleteTrack() {
   return async (request, response) => {
     try {
       const delteTrackID = request.params.trackID;
