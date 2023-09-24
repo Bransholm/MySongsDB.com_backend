@@ -219,26 +219,7 @@ app.put("/tracks/:trackID", async (request, response) => {
 });
 
 // DELETE a track //
-app.delete("/tracks/:trackID", async (request, response) => {
-  try {
-    const id = request.params.trackID;
-    const values = [id];
-    const query = "DELETE FROM tracks WHERE trackID=?";
-
-    const [deletedTracks] = await dbConnection.execute(query, values);
-
-    if (deletedTracks.affectedRows === 0) {
-      response
-        .status(404)
-        .json({ error: `The track with the id ${id} does not exist` });
-    } else {
-      response.json(deletedTracks);
-    }
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+app.delete("/tracks/:trackID", delteTrack());
 
 //////// ALBUM ROUTS ////////
 
@@ -367,38 +348,9 @@ app.put("/albums/:albumId", async (request, response) => {
 });
 
 // DELETE albums and the crosstable fields it belongs to.
-app.delete("/albums/:albumId", async (request, response) => {
-  const albumID = request.params.albumId;
-  const albumValues = [albumID];
-  try {
-    //@@@@@ her skal der være noget der også delete i krydstabellerne @@@@@@@
-    const albumsTracksQuery = `DELETE FROM albums_tracks WHERE album_ID = ${albumID};`;
-    const [albumtrack] = await dbConnection.query(
-      albumsTracksQuery,
-      albumValues
-    );
+app.delete("/albums/:albumId", deleteAlbum());
 
-    const artistAlbumtQuery = `DELETE FROM artists_albums WHERE album_ID = ${albumID};`;
-    const [artistAlbum] = await dbConnection.query(
-      artistAlbumtQuery,
-      albumValues
-    );
-
-    const albumQuery = "DELETE FROM albums WHERE albumID=?";
-    const [albums] = await dbConnection.query(albumQuery, albumValues);
-
-    if (albums.affectedRows === 0) {
-      response
-        .status(404)
-        .json({ error: `The album with the id ${id} does not exsists` });
-    } else {
-      response.json(albumtrack, artistAlbum, albums);
-    }
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+/// CROSSTABLE DIRET ///
 
 // READ all albums
 app.get("/albums_tracks", (request, response) => {
@@ -428,7 +380,7 @@ app.get("/artists_albums", async (request, response) => {
 
 //////// ------------- ALBUM MANY TO MANY ------------- ////////
 
-app.get("/albums/:id/tracks", (request, response) => {
+app.get("/albums/:id/tracks", async (request, response) => {
   const id = request.params.id;
   const query = /*sql*/ `
   SELECT albums.albumName AS albumName,
@@ -448,6 +400,7 @@ app.get("/albums/:id/tracks", (request, response) => {
     `;
 
   const values = [id];
+
   dbConnection.query(query, values, (error, results) => {
     if (error) {
       console.log(error);
@@ -482,3 +435,82 @@ app.post("/artists_albums", async (request, response) => {
   const [crossTrackResult] = await dbConnection.execute(query, values);
   response.json(crossTrackResult);
 });
+
+//////// TRACK FUNCTIONS ////////
+
+function delteTrack() {
+  return async (request, response) => {
+    try {
+      const delteTrackID = request.params.trackID;
+      const values = [delteTrackID];
+
+      // Delete all fields with given track foreignkeys from (artists_tracks)
+      const deleteArtistTrackQuery = `DELETE FROM artists_tracks WHERE track_ID= ${delteTrackID}`;
+      const [deleteArtistsTrack] = await dbConnection.execute(
+        deleteArtistTrackQuery,
+        values
+      );
+
+      // Delete all fields with given track foreignkeys from (albums_tracks)
+      const deleteAlbumTrackQuery = `DELETE FROM albums_tracks WHERE track_ID = ${delteTrackID}`;
+      const [deleteAlbumTrack] = await dbConnection.execute(
+        deleteAlbumTrackQuery,
+        values
+      );
+
+      // Delete the given track from (trakcs)
+      const query = "DELETE FROM tracks WHERE trackID=?";
+      const [deletedTracks] = await dbConnection.execute(query, values);
+
+      if (deletedTracks.affectedRows === 0) {
+        response.status(404).json({
+          error: `The track with the id ${delteTrackID} does not exist`,
+        });
+      } else {
+        response.json(deleteArtistsTrack, deleteAlbumTrack, deletedTracks);
+      }
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+}
+
+//////// ALBUM FUNCTIONS ////////
+
+function deleteAlbum() {
+  return async (request, response) => {
+    const albumID = request.params.albumId;
+    const albumValues = [albumID];
+    try {
+      // Delete all fields with given album foreignkeys from (albums_tracks)
+      const albumsTracksQuery = `DELETE FROM albums_tracks WHERE album_ID = ${albumID};`;
+      const [albumtrack] = await dbConnection.query(
+        albumsTracksQuery,
+        albumValues
+      );
+
+      // Delete all fields with given album foreignkeys from (artists_albums)
+      const artistAlbumtQuery = `DELETE FROM artists_albums WHERE album_ID = ${albumID};`;
+      const [artistAlbum] = await dbConnection.query(
+        artistAlbumtQuery,
+        albumValues
+      );
+
+      // Delete the given album from (albums)
+      const albumQuery = "DELETE FROM albums WHERE albumID=?";
+      const [albums] = await dbConnection.query(albumQuery, albumValues);
+
+      if (albums.affectedRows === 0) {
+        response
+          .status(404)
+          .json({ error: `The album with the id ${id} does not exsists` });
+      } else {
+        response.json(albumtrack, artistAlbum, albums);
+      }
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+}
