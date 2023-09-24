@@ -23,3 +23,13 @@ Example on how to add a new album:
 "year": "0000",
 "albumImage": "TESTalbum.jpg"
 }
+
+Example on how to add a new track:
+
+{
+        "artistIds": ["12","14"],
+        "trackName": "Test",
+        "length": 200 ,
+        "creationYear": "1998",
+        "genre": "Testgenre"
+}

@@ -167,7 +167,7 @@ app.post("/tracks", async (request, response) => {
       console.log(typeof artist);
 
       const artistQuery =
-        "INSERT INTO artists_tracks (artists_ID, tracks_ID) VALUES (?,?)";
+        "INSERT INTO artists_tracks (artist_ID, track_ID) VALUES (?,?)";
 
       const artistValue = [artist, newTrackID];
 
