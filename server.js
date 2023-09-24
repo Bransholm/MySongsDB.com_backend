@@ -482,7 +482,7 @@ function updateAlbum() {
       if (updatedAlbum.affectedRows === 0) {
         response
           .status(404)
-          .json({ error: `The album with the id ${id} does not exsists` });
+          .json({ error: `The album with the id ${albumID} does not exsists` });
       } else {
         response.json(updatedAlbum);
       }
