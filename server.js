@@ -117,7 +117,6 @@ app.delete("/artists/:id", async (request, response) => {
   }
 });
 
-
 //////// TRACKS ROUTES ////////
 
 // READ all tracks //
@@ -131,7 +130,6 @@ app.get("/tracks", async (request, response) => {
     response.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // READ one track //
 app.get("/tracks/:trackID", async (request, response) => {
@@ -155,7 +153,6 @@ app.get("/tracks/:trackID", async (request, response) => {
     response.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // Create a track //
 app.post("/tracks", async (request, response) => {
@@ -193,7 +190,6 @@ app.post("/tracks", async (request, response) => {
   }
 });
 
-
 // Update a track //
 app.put("/tracks/:trackID", async (request, response) => {
   try {
@@ -222,7 +218,6 @@ app.put("/tracks/:trackID", async (request, response) => {
   }
 });
 
-
 // DELETE a track //
 app.delete("/tracks/:trackID", async (request, response) => {
   try {
@@ -244,7 +239,6 @@ app.delete("/tracks/:trackID", async (request, response) => {
     response.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 //////// ALBUM ROUTS ////////
 
@@ -451,3 +445,60 @@ app.post("/artists_albums", async (request, response) => {
   const [crossTrackResult] = await dbConnection.execute(query, values);
   response.json(crossTrackResult);
 });
+
+//////// SEARCH ROUTES ////////////
+
+// TRACK SEARCH //
+
+// Dette er en route for at søge på trackNames
+app.get("/search", async (request, response) => {
+  try {
+    const searchType = request.query.type;
+    const searchTerm = request.query.q; // User angiver hvad der skal skrives og findes i query parameteret
+
+    let query = "";
+
+    if (searchType === "trackName") {
+      query = "SELECT * from tracks WHERE trackName LIKE ?";
+    } else if (searchTerm === "genre") {
+      query = "SELECT * from tracks WHERE genre LIKE ?";
+    } else {
+      return response.status(400).json({ error: "Invalid search type" });
+    }
+    // Vi laver en query til databasen som prøver at matche det som der søges på med det som står i databasen
+    const [rows] = await dbConnection.query(
+      "SELECT * from tracks WHERE trackName LIKE ?",
+      [`%${searchTerm}%`]
+    );
+    response.json({ tracks: rows });
+  } catch (error) {
+    console.error(
+      "There was an error, when attempting to search for a trackName",
+      error
+    );
+    response
+      .status(500)
+      .json({ error: "An error occurred while searching for tracks" });
+  }
+});
+
+//Dette er en route for at finde track genre : genre
+
+// app.get("/search", async (request, response) => {
+//   try {
+//     const searchTerm = request.query.q;
+//     const [rows] = await dbConnection.query(
+//       "SELECT * FROM tracks WHERE genre LIKE ?",
+//       [`%${searchTerm}%`]
+//     );
+//     response.json({ tracks: rows });
+//   } catch (error) {
+//     console.error(
+//       "There was an error, when attempting to search for a track genre",
+//       error
+//     );
+//     response
+//       .status(500)
+//       .json({ error: "An error occurred while searching for tracks" });
+//   }
+// });
