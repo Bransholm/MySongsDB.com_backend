@@ -270,7 +270,6 @@ app.post("/albums", async (request, response) => {
     const newAlbumID = newAlbum.insertId;
 
     for (const artist of album.artistIds) {
-      console.log(typeof artist);
 
       const artistQuery =
         "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
