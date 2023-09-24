@@ -158,20 +158,26 @@ app.post("/tracks", async (request, response) => {
   ];
 
   try {
-    const [rows, fields] = await dbConnection.execute(query, values);
+    const [newTrack] = await dbConnection.execute(query, values);
+    console.log(newTrack);
 
-    const newTrackID = rows.insertId;
+    const newTrackID = newTrack.insertId;
 
-    const artistQuery =
-      "INSERT INTO artists_tracks (artist_ID, track_ID) VALUES (?, ?)";
-    const artistValues = [track.artistID, newTrackID];
+    for (const artist of track.artistIds) {
+      console.log(typeof artist);
 
-    const [artistsTracksResult, fields2] = await dbConnection.execute(
-      artistQuery,
-      artistValues
-    );
+      const artistQuery =
+        "INSERT INTO artists_tracks (artists_ID, tracks_ID) VALUES (?,?)";
 
-    console.log(artistsTracksResult);
+      const artistValue = [artist, newTrackID];
+
+      const [artistsTracksResult] = await dbConnection.execute(
+        artistQuery,
+        artistValue
+      );
+      console.log(artistsTracksResult);
+    }
+    response.json({ message: "You created a new track" });
   } catch (error) {
     console.error(error);
     response.status(500).json({ message: "Internal server error" });
