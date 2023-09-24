@@ -246,15 +246,6 @@ app.delete("/tracks/:trackID", async (request, response) => {
 });
 
 
-// app.delete("/tracks/:trackID", async (request, response) => {
-//   const id = request.params.trackID;
-//   const values = [id];
-//   const query = "DELETE FROM tracks WHERE  trackID=?";
-
-//   const [tracks] = await dbConnection.execute(query, values);
-//   response.json(tracks);
-// });
-
 //////// ALBUM ROUTS ////////
 
 // READ all albums
