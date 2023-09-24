@@ -258,33 +258,26 @@ app.get("/albums", async (request, response) => {
 
 // READ one albums
 app.get("/albums/:id", async (request, response) => {
-  const id = request.params.id;
-  const queryString = /*sql*/ `
-        SELECT * FROM albums
-            WHERE albums.albumID=?;`; // sql query
-  const values = [id];
+  try {
+    const id = request.params.id;
+    const queryString = /*sql*/ `
+      SELECT * FROM albums
+      WHERE albums.albumID=?;`; // sql query
+    const values = [id];
 
-  const [albumIdResult] = await dbConnection.execute(queryString, values);
-  response.json(albumIdResult);
+    const [albumIdResult] = await dbConnection.execute(queryString, values);
+    if (albumIdResult.length === 0) {
+      response
+        .status(404)
+        .json({ error: `The album with the id ${id} does not exsists` });
+    } else {
+      response.json(albumIdResult[0]);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
-
-// CREATE albums
-// app.post("/albums", (request, response) => {
-//   const album = request.body;
-//   console.log(album);
-
-//   const values = [album.albumName, album.edition, album.year, album.albumImage];
-//   const query =
-//     "INSERT INTO albums (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
-
-//   dbConnection.query(query, values, (err, results, fields) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       response.json(results);
-//     }
-//   });
-// });
 
 // CREATE albums
 app.post("/albums", async (request, response) => {
@@ -300,32 +293,40 @@ app.post("/albums", async (request, response) => {
   ];
 
   try {
-    const [rows, fields] = await dbConnection.execute(albumQuery, albumValues);
+    // Create a new album in the albums table
+    const [newAlbum] = await dbConnection.execute(albumQuery, albumValues);
+    console.log(newAlbum);
 
-    // ....hvor kommer insert id fra (Ja dette er en "dev note only").
-    const newAlbumID = rows.insertId;
+    // Get the newly created albumID
+    const newAlbumID = newAlbum.insertId;
 
-    const artistQuery =
-      "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
-    const artistValue = [album.artistID, newAlbumID];
+    for (const artist of album.artistIds) {
+      console.log(typeof artist);
 
-    const [aristsAlbumsResult, fields2] = await dbConnection.execute(
-      artistQuery,
-      artistValue
-    );
+      const artistQuery =
+        "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
 
-    console.log(aristsAlbumsResult);
+      const artistValue = [artist, newAlbumID];
 
-    const trackQuery =
-      "INSERT INTO albums_tracks (album_ID, track_ID) VALUES (?,?)";
-    const trackValue = [newAlbumID, album.trackID];
+      const [aristsAlbumsResult] = await dbConnection.execute(
+        artistQuery,
+        artistValue
+      );
+      console.log(aristsAlbumsResult);
+    }
 
-    const [albumsTracskResults, fields3] = await dbConnection.execute(
-      trackQuery,
-      trackValue
-    );
+    for (const track of album.trackIds) {
+      console.log(track);
+      const trackQuery =
+        "INSERT INTO albums_tracks (album_ID, track_ID) VALUES (?,?)";
+      const trackValue = [newAlbumID, track];
 
-    console.log(albumsTracskResults);
+      const [albumsTracskResults] = await dbConnection.execute(
+        trackQuery,
+        trackValue
+      );
+      console.log(albumsTracskResults);
+    }
 
     response.json({ message: "You created a new Album" });
   } catch (error) {
@@ -336,31 +337,55 @@ app.post("/albums", async (request, response) => {
 
 // UPDATE albums
 app.put("/albums/:albumId", async (request, response) => {
-  const albumID = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-  const albumBody = request.body;
+  try {
+    const albumID = request.params.albumId;
+    const albumBody = request.body;
 
-  const values = [
-    albumBody.albumName,
-    albumBody.edition,
-    albumBody.year,
-    albumBody.albumImage,
-    albumID,
-  ];
-  const query =
-    "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
+    const values = [
+      albumBody.albumName,
+      albumBody.edition,
+      albumBody.year,
+      albumBody.albumImage,
+      albumID,
+    ];
+    const query =
+      "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
 
-  const [updatedAlbum] = await dbConnection.execute(query, values);
-  response.json(updatedAlbum);
+    const [updatedAlbum] = await dbConnection.execute(query, values);
+
+    if (updatedAlbum.affectedRows === 0) {
+      response
+        .status(404)
+        .json({ error: `The album with the id ${id} does not exsists` });
+    } else {
+      response.json(updatedAlbum);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-// DELETE albums
+// DELETE albums and the crosstable fields it belongs to.
 app.delete("/albums/:albumId", async (request, response) => {
-  const id = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-  const values = [id];
-  const query = "DELETE FROM albums WHERE albumID=?";
+  try {
+    const albumID = request.params.albumId;
+    const values = [albumID];
+    const query = "DELETE FROM albums WHERE albumID=?";
 
-  const [albums] = await dbConnection.query(query, values);
-  response.json(albums);
+    const [deletedAlbums] = await dbConnection.query(query, values);
+
+    if (deletedAlbums.affectedRows === 0) {
+      response
+        .status(404)
+        .json({ error: `The album with the id ${id} does not exsists` });
+    } else {
+      response.json(deletedAlbums);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // READ all albums

@@ -1,35 +1,4 @@
 Dependencies to install: express, cors, dotenv & mysql2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 For at benytte sig af search routes ved hjælp af postman skal man gøre følgende: 
 
 Tracks:
@@ -43,3 +12,14 @@ Artist:
 Album:
 {endpoint}/search?type=albumName&q=detsomduharindsatisøgefeltet
 {endpoint}/search?type=edition&q=detsomduharindsatisøgefeltet
+
+
+Example on how to add a new album:
+{
+"artistIds":["5","3","1"],
+"trackIds":["11","10","4","6","2"],
+"albumName": "GIGA_TEST",
+"edition": "TEST",
+"year": "0000",
+"albumImage": "TESTalbum.jpg"
+}
