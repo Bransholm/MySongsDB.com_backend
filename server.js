@@ -146,7 +146,7 @@ app.get("/tracks/:trackID", async (request, response) => {
     if (trackIdResult.length === 0) {
       response
         .status(404)
-        .json({ error: `The artist with the id ${id} does not exist` });
+        .json({ error: `The track with the id ${id} does not exist` });
     } else {
       response.json(trackIdResult[0]);
     }
@@ -225,13 +225,35 @@ app.put("/tracks/:trackID", async (request, response) => {
 
 // DELETE a track //
 app.delete("/tracks/:trackID", async (request, response) => {
-  const id = request.params.trackID;
-  const values = [id];
-  const query = "DELETE FROM tracks WHERE  trackID=?";
+  try {
+    const id = request.params.trackID;
+    const values = [id];
+    const query = "DELETE FROM tracks WHERE trackID=?";
 
-  const [tracks] = await dbConnection.execute(query, values);
-  response.json(tracks);
+    const [deletedTracks] = await dbConnection.execute(query, values);
+
+    if (deletedTracks.affectedRows === 0) {
+      response
+        .status(404)
+        .json({ error: `The track with the id ${id} does not exist` });
+    } else {
+      response.json(deletedTracks);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
+
+// app.delete("/tracks/:trackID", async (request, response) => {
+//   const id = request.params.trackID;
+//   const values = [id];
+//   const query = "DELETE FROM tracks WHERE  trackID=?";
+
+//   const [tracks] = await dbConnection.execute(query, values);
+//   response.json(tracks);
+// });
 
 //////// ALBUM ROUTS ////////
 
