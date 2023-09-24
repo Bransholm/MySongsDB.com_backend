@@ -274,7 +274,7 @@ app.get("/albums/:id", async (request, response) => {
 
     const [albumIdResult] = await dbConnection.execute(queryString, values);
     if (albumIdResult.length === 0) {
-      response.status(404).json({ error: "Album not found" });
+      response.status(404).json({ error: `The album with the id ${id} does not exsists` });
     } else {
       response.json(albumIdResult[0]);
     }
@@ -335,22 +335,33 @@ app.post("/albums", async (request, response) => {
 
 // UPDATE albums
 app.put("/albums/:albumId", async (request, response) => {
-  const albumID = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-  const albumBody = request.body;
+  try {
+    const albumID = request.params.albumId;
+    const albumBody = request.body;
 
-  const values = [
-    albumBody.albumName,
-    albumBody.edition,
-    albumBody.year,
-    albumBody.albumImage,
-    albumID,
-  ];
-  const query =
-    "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
+    const values = [
+      albumBody.albumName,
+      albumBody.edition,
+      albumBody.year,
+      albumBody.albumImage,
+      albumID,
+    ];
+    const query =
+      "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
 
-  const [updatedAlbum] = await dbConnection.execute(query, values);
-  response.json(updatedAlbum);
+    const [updatedAlbum] = await dbConnection.execute(query, values);
+
+    if (updatedAlbum.affectedRows === 0) {
+      response.status(404).json({ error: `The album with the id ${id} does not exsists` });
+    } else {
+      response.json(updatedAlbum);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 
 // DELETE albums
 app.delete("/albums/:albumId", async (request, response) => {
