@@ -1,1 +1,15 @@
 Dependencies to install: express, cors, dotenv & mysql2
+
+
+
+
+
+Example on how to add a new album:
+{
+"artistIds":["5","3","1"],
+"trackIds":["11","10","4","6","2"],
+"albumName": "GIGA_TEST",
+"edition": "TEST",
+"year": "0000",
+"albumImage": "TESTalbum.jpg"
+}

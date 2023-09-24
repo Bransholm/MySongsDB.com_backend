@@ -260,7 +260,7 @@ app.post("/albums", async (request, response) => {
     const newAlbumID = newAlbum.insertId;
 
     for (const artist of album.artistIds) {
-      console.log(artist);
+      console.log(typeof artist);
 
       const artistQuery =
         "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
@@ -313,13 +313,19 @@ app.put("/albums/:albumId", async (request, response) => {
   response.json(updatedAlbum);
 });
 
-// DELETE albums
+// DELETE albums and the crosstable fields it belongs to.
 app.delete("/albums/:albumId", async (request, response) => {
   const id = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
   const values = [id];
   const query = "DELETE FROM albums WHERE albumID=?";
 
   const [albums] = await dbConnection.query(query, values);
+
+  //@@@@@ her skal der være noget der også delete i krydstabellerne @@@@@@@
+  // const artistAlbumtQuery =
+  //   "DELETE FROM artists_albums WHERE album_ID === albumID";
+  // const [artistAlbum] = await dbConnection.query(query, values);
+  // "DELETE FROM albums_tracks WHERE album_ID === albumID"
   response.json(albums);
 });
 
