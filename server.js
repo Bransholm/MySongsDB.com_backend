@@ -333,6 +333,7 @@ app.post("/albums", async (request, response) => {
   }
 });
 
+
 // UPDATE albums
 app.put("/albums/:albumId", async (request, response) => {
   try {
@@ -365,13 +366,24 @@ app.put("/albums/:albumId", async (request, response) => {
 
 // DELETE albums
 app.delete("/albums/:albumId", async (request, response) => {
-  const id = request.params.albumId; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-  const values = [id];
-  const query = "DELETE FROM albums WHERE albumID=?";
+  try {
+    const albumID = request.params.albumId;
+    const values = [albumID];
+    const query = "DELETE FROM albums WHERE albumID=?";
 
-  const [albums] = await dbConnection.query(query, values);
-  response.json(albums);
+    const [deletedAlbums] = await dbConnection.query(query, values);
+
+    if (deletedAlbums.affectedRows === 0) {
+      response.status(404).json({ error: `The album with the id ${id} does not exsists` });
+    } else {
+      response.json(deletedAlbums);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 
 // READ all albums
 app.get("/albums_tracks", (request, response) => {
