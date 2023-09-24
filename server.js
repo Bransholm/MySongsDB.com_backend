@@ -262,17 +262,40 @@ app.get("/albums", async (request, response) => {
   }
 });
 
+
 // READ one albums
 app.get("/albums/:id", async (request, response) => {
-  const id = request.params.id;
-  const queryString = /*sql*/ `
-        SELECT * FROM albums
-            WHERE albums.albumID=?;`; // sql query
-  const values = [id];
+  try {
+    const id = request.params.id;
+    const queryString = /*sql*/ `
+      SELECT * FROM albums
+      WHERE albums.albumID=?;`; // sql query
+    const values = [id];
 
-  const [albumIdResult] = await dbConnection.execute(queryString, values);
-  response.json(albumIdResult);
+    const [albumIdResult] = await dbConnection.execute(queryString, values);
+    if (albumIdResult.length === 0) {
+      response.status(404).json({ error: "Album not found" });
+    } else {
+      response.json(albumIdResult[0]);
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
+
+// app.get("/albums/:id", async (request, response) => {
+//   const id = request.params.id;
+//   const queryString = /*sql*/ `
+//         SELECT * FROM albums
+//             WHERE albums.albumID=?;`; // sql query
+//   const values = [id];
+
+//   const [albumIdResult] = await dbConnection.execute(queryString, values);
+//   response.json(albumIdResult);
+// });
+
 
 // CREATE albums
 // app.post("/albums", (request, response) => {
