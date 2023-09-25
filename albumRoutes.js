@@ -1,6 +1,6 @@
 // import { Router } from "express";
 
-// const appRouter = Router();
+// const appRouter = Router(); notes
 
 
 function deleteAlbum() {
