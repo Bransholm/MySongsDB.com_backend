@@ -1,5 +1,3 @@
-import {dbConnection} from "./data/database.js";
-
 function readAllAlbums() {
   return async (request, response) => {
     const query = "SELECT * FROM albums";
