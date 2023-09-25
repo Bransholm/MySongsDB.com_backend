@@ -7,6 +7,7 @@ import { error } from "console";
 import appAlbumRouter from "./albumRoutes.js";
 import appArtistRouter from "./artistsRoutes.js";
 import appArtistRoutes from "./trackRoutes.js";
+import searchRoutes from "./searchFunctions.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -17,6 +18,7 @@ app.use(cors());
 app.use("/albums", appAlbumRouter);
 app.use("/artists", appArtistRouter);
 app.use("/tracks", appArtistRoutes);
+app.use(searchRoutes);
 
 app.listen(port, () => {
   console.log(
@@ -436,43 +438,43 @@ app.post("/artists_albums", async (request, response) => {
 //   }
 // });
 
-app.get("/search", async (request, response) => {
-  try {
-    const searchType = request.query.type;
-    const searchTerm = request.query.q;
+// app.get("/search", async (request, response) => {
+//   try {
+//     const searchType = request.query.type;
+//     const searchTerm = request.query.q;
 
-    let query = "";
-    let tableName = "";
+//     let query = "";
+//     let tableName = "";
 
-    if (searchType === "trackName") {
-      query = "SELECT * from tracks WHERE trackName LIKE ?";
-      tableName = "tracks";
-    } else if (searchType === "genre") {
-      query = "SELECT * from tracks WHERE genre LIKE ?";
-      tableName = "tracks";
-    } else if (searchType === "artistName") {
-      query = "SELECT * from artists WHERE artistName LIKE ?";
-      tableName = "artists";
-    } else if (searchType === "activeSince") {
-      query = "SELECT * from artists WHERE activeSince LIKE ?";
-      tableName = "artists";
-    } else if (searchType === "albumName") {
-      query = "SELECT * from albums WHERE albumName LIKE ?";
-      tableName = "albums";
-    } else if (searchType === "edition") {
-      query = "SELECT * from albums WHERE edition LIKE ?";
-      tableName = "albums";
-    } else {
-      return response.status(400).json({ error: "Invalid search type" });
-    }
+//     if (searchType === "trackName") {
+//       query = "SELECT * from tracks WHERE trackName LIKE ?";
+//       tableName = "tracks";
+//     } else if (searchType === "genre") {
+//       query = "SELECT * from tracks WHERE genre LIKE ?";
+//       tableName = "tracks";
+//     } else if (searchType === "artistName") {
+//       query = "SELECT * from artists WHERE artistName LIKE ?";
+//       tableName = "artists";
+//     } else if (searchType === "activeSince") {
+//       query = "SELECT * from artists WHERE activeSince LIKE ?";
+//       tableName = "artists";
+//     } else if (searchType === "albumName") {
+//       query = "SELECT * from albums WHERE albumName LIKE ?";
+//       tableName = "albums";
+//     } else if (searchType === "edition") {
+//       query = "SELECT * from albums WHERE edition LIKE ?";
+//       tableName = "albums";
+//     } else {
+//       return response.status(400).json({ error: "Invalid search type" });
+//     }
 
-    const [rows] = await dbConnection.query(query, [`%${searchTerm}%`]);
-    response.json({ [tableName]: rows });
-  } catch (error) {
-    console.error("There was an error when attempting to search", error);
-    response.status(500).json({ error: "An error occurred while searching" });
-  }
-});
+//     const [rows] = await dbConnection.query(query, [`%${searchTerm}%`]);
+//     response.json({ [tableName]: rows });
+//   } catch (error) {
+//     console.error("There was an error when attempting to search", error);
+//     response.status(500).json({ error: "An error occurred while searching" });
+//   }
+// });
 
 //////// TRACK FUNCTIONS ////////
 
