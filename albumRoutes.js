@@ -1,4 +1,4 @@
-function readAllAlbums() {
+export function readAllAlbums() {
   return async (request, response) => {
     const query = "SELECT * FROM albums";
     const [albumResult] = await dbConnection.execute(query);
@@ -13,7 +13,7 @@ function readAllAlbums() {
   };
 }
 
-function readSpecificAlbum() {
+export function readSpecificAlbum() {
   return async (request, response) => {
     try {
       const id = request.params.id;
@@ -37,7 +37,7 @@ function readSpecificAlbum() {
   };
 }
 
-function createNewAlbum() {
+export function createNewAlbum() {
   return async (request, response) => {
     const album = request.body;
 
@@ -92,7 +92,7 @@ function createNewAlbum() {
   };
 }
 
-function updateAlbum() {
+export function updateAlbum() {
   return async (request, response) => {
     try {
       const albumID = request.params.albumId;
@@ -124,7 +124,7 @@ function updateAlbum() {
   };
 }
 
-function deleteAlbum() {
+export function deleteAlbum() {
   return async (request, response) => {
     const albumID = request.params.albumId;
     const albumValues = [albumID];
