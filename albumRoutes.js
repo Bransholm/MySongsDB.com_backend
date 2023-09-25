@@ -1,4 +1,6 @@
-import {dbConnection} from "./data/database.js";
+// import { Router } from "express";
+
+// const appRouter = Router();
 
 function readAllAlbums() {
   return async (request, response) => {
