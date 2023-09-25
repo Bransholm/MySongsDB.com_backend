@@ -1,3 +1,5 @@
+import dbConnection from "./data/database";
+
 function readAllAlbums() {
   return async (request, response) => {
     const query = "SELECT * FROM albums";
