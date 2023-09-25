@@ -1,18 +1,20 @@
 import express, { response } from "express";
 import cors from "cors";
 import fs from "fs/promises";
-import dbConnection from "./data/database.js";
+// import dbConnection from "./data/database.js";
 import { request } from "http";
 import { error } from "console";
-import {
-  deleteAlbum,
-} from "./albumRoutes.js";
+import appAlbumRouter from "./albumRoutes.js";
+import appArtistRouter from "./artistsRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(cors());
+//AlbumRoutes
+app.use("/albums", appAlbumRouter);
+app.use("/artists", appArtistRouter);
 
 app.listen(port, () => {
   console.log(
@@ -27,86 +29,86 @@ app.get("/", (request, response) => {
 
 //////// ARTIST ROUTES ////////
 
-// READ all artists
-app.get("/artists", async (request, response) => {
-  try {
-    const query = "SELECT * FROM artists ORDER BY artistName;";
-    const [artistResult] = await dbConnection.execute(query);
-    response.json(artistResult);
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+// // READ all artists
+// app.get("/artists", async (request, response) => {
+//   try {
+//     const query = "SELECT * FROM artists ORDER BY artistName;";
+//     const [artistResult] = await dbConnection.execute(query);
+//     response.json(artistResult);
+//   } catch (error) {
+//     console.error(error);
+//     response.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
-// READ artist by id
-app.get("/artists/:id", async (request, response) => {
-  try {
-    const id = request.params.id;
-    const query = "SELECT * FROM artists WHERE artists.artistID=?";
-    const values = [id];
+// // READ artist by id
+// app.get("/artists/:id", async (request, response) => {
+//   try {
+//     const id = request.params.id;
+//     const query = "SELECT * FROM artists WHERE artists.artistID=?";
+//     const values = [id];
 
-    const [artistResult] = await dbConnection.execute(query, values);
+//     const [artistResult] = await dbConnection.execute(query, values);
 
-    if (artistResult.length === 0) {
-      response
-        .status(404)
-        .json({ error: `The artist with the id ${id} does not exist` });
-    } else {
-      response.json(artistResult[0]);
-    }
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     if (artistResult.length === 0) {
+//       response
+//         .status(404)
+//         .json({ error: `The artist with the id ${id} does not exist` });
+//     } else {
+//       response.json(artistResult[0]);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     response.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
-// CREATE artist
-app.post("/artists", async (request, response) => {
-  try {
-    const artist = request.body;
-    const query =
-      "INSERT INTO artists (artistName, birthdate, activeSince, artistImage) VALUES (?,?,?,?);";
-    const values = [
-      artist.artistName,
-      artist.birthdate,
-      artist.activeSince,
-      artist.artistImage,
-    ];
+// // CREATE artist
+// app.post("/artists", async (request, response) => {
+//   try {
+//     const artist = request.body;
+//     const query =
+//       "INSERT INTO artists (artistName, birthdate, activeSince, artistImage) VALUES (?,?,?,?);";
+//     const values = [
+//       artist.artistName,
+//       artist.birthdate,
+//       artist.activeSince,
+//       artist.artistImage,
+//     ];
 
-    const insertResult = await dbConnection.execute(query, values);
-    response.json(insertResult);
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     const insertResult = await dbConnection.execute(query, values);
+//     response.json(insertResult);
+//   } catch (error) {
+//     console.error(error);
+//     response.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
-// UPDATE artist
-app.put("/artists/:id", async (request, response) => {
-  try {
-    const artistID = request.params.id;
-    const artistBody = request.body;
-    const query =
-      "UPDATE artists SET artistName=?, birthdate=?, activeSince=?, artistImage=? WHERE artistID=?;";
-    const values = [
-      artistBody.artistName,
-      artistBody.birthdate,
-      artistBody.activeSince,
-      artistBody.artistImage,
-      artistID,
-    ];
+// // UPDATE artist
+// app.put("/artists/:id", async (request, response) => {
+//   try {
+//     const artistID = request.params.id;
+//     const artistBody = request.body;
+//     const query =
+//       "UPDATE artists SET artistName=?, birthdate=?, activeSince=?, artistImage=? WHERE artistID=?;";
+//     const values = [
+//       artistBody.artistName,
+//       artistBody.birthdate,
+//       artistBody.activeSince,
+//       artistBody.artistImage,
+//       artistID,
+//     ];
 
-    const updateResult = await dbConnection.execute(query, values);
-    response.json(updateResult);
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     const updateResult = await dbConnection.execute(query, values);
+//     response.json(updateResult);
+//   } catch (error) {
+//     console.error(error);
+//     response.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
-// DELETE artist
-app.delete("/artists/:id", deleteArtist());
+// // DELETE artist
+// app.delete("/artists/:id", deleteArtist());
 
 //////// TRACKS ROUTES ////////
 
@@ -220,20 +222,20 @@ app.delete("/tracks/:trackID", deleteTrack());
 
 //////// ALBUM ROUTS ////////
 
-// READ all albums
-app.get("/albums", readAllAlbums());
+// // READ all albums
+// app.get("/albums", readAllAlbums());
 
-// READ one albums
-app.get("/albums/:id", readSpecificAlbum());
+// // READ one albums
+// app.get("/albums/:id", readSpecificAlbum());
 
-// CREATE albums
-app.post("/albums", createNewAlbum());
+// // CREATE albums
+// app.post("/albums", createNewAlbum());
 
-// UPDATE albums
-app.put("/albums/:albumId", updateAlbum());
+// // UPDATE albums
+// app.put("/albums/:albumId", updateAlbum());
 
-// DELETE albums and the crosstable fields it belongs to.
-app.delete("/albums/:albumId", deleteAlbum());
+// // DELETE albums and the crosstable fields it belongs to.
+// app.delete("/albums/:albumId", deleteAlbum());
 
 /// CROSSTABLE DIRET ///
 
@@ -512,166 +514,197 @@ function deleteTrack() {
 
 //////// Artists FUNCTIONS ////////
 
-function deleteArtist() {
-  return async (request, response) => {
-    try {
-      const artistID = request.params.id;
-      const artistsValue = [artistID];
+// function deleteArtist() {
+//   return async (request, response) => {
+//     try {
+//       const artistID = request.params.id;
+//       const artistsValue = [artistID];
 
-      // Delete all fields with given artist foreignkeys from (artists_tracks)
-      const deleteArtistsTrackQuery = `DELETE FROM artists_tracks WHERE artist_ID = ${artistID}`;
-      const [deleteArtistsTrack] = await dbConnection.execute(
-        deleteArtistsTrackQuery,
-        artistsValue
-      );
+//       // Delete all fields with given artist foreignkeys from (artists_tracks)
+//       const deleteArtistsTrackQuery = `DELETE FROM artists_tracks WHERE artist_ID = ${artistID}`;
+//       const [deleteArtistsTrack] = await dbConnection.execute(
+//         deleteArtistsTrackQuery,
+//         artistsValue
+//       );
 
-      // Delete all fields with given artist foreignkeys from (artists_albums)
-      const deleteArtistAlbumQuery = `DELETE FROM artists_albums WHERE artist_ID = ${artistID}`;
-      const [deletealbumTrack] = await dbConnection.execute(
-        deleteArtistAlbumQuery,
-        artistsValue
-      );
+//       // Delete all fields with given artist foreignkeys from (artists_albums)
+//       const deleteArtistAlbumQuery = `DELETE FROM artists_albums WHERE artist_ID = ${artistID}`;
+//       const [deletealbumTrack] = await dbConnection.execute(
+//         deleteArtistAlbumQuery,
+//         artistsValue
+//       );
 
-      // Delete the artists from (artists)
-      const query = "DELETE FROM artists WHERE artistID=?;";
-      const deleteResult = await dbConnection.execute(query, artistsValue);
+//       // Delete the artists from (artists)
+//       const query = "DELETE FROM artists WHERE artistID=?;";
+//       const deleteResult = await dbConnection.execute(query, artistsValue);
 
-      response.json(deleteArtistsTrack, deletealbumTrack, deleteResult);
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ error: "Internal Server Error" });
-    }
-  };
-}
-
-
+//       response.json(deleteArtistsTrack, deletealbumTrack, deleteResult);
+//     } catch (error) {
+//       console.error(error);
+//       response.status(500).json({ error: "Internal Server Error" });
+//     }
+//   };
+// }
 
 ///  ALBUM FUNCTIONS - NOT DELETE ///
 
+// function readAllAlbums() {
+//   return async (request, response) => {
+//     const query = "SELECT * FROM albums";
+//     const [albumResult] = await dbConnection.execute(query);
 
+//     if (!albumResult) {
+//       response
+//         .status(500)
+//         .json({ message: "An Internal Server Error Has Occured" });
+//     } else {
+//       response.json(albumResult);
+//     }
+//   };
+// }
 
-function readAllAlbums() {
-  return async (request, response) => {
-    const query = "SELECT * FROM albums";
-    const [albumResult] = await dbConnection.execute(query);
+// function readSpecificAlbum() {
+//   return async (request, response) => {
+//     try {
+//       const id = request.params.id;
+//       const queryString = /*sql*/ `
+//       SELECT * FROM albums
+//       WHERE albums.albumID=?;`; // sql query
+//       const values = [id];
 
-    if (!albumResult) {
-      response
-        .status(500)
-        .json({ message: "An Internal Server Error Has Occured" });
-    } else {
-      response.json(albumResult);
-    }
-  };
-}
+//       const [albumIdResult] = await dbConnection.execute(queryString, values);
+//       if (albumIdResult.length === 0) {
+//         response
+//           .status(404)
+//           .json({ error: `The album with the id ${id} does not exsists` });
+//       } else {
+//         response.json(albumIdResult[0]);
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       response.status(500).json({ error: "Internal Server Error" });
+//     }
+//   };
+// }
 
-function readSpecificAlbum() {
-  return async (request, response) => {
-    try {
-      const id = request.params.id;
-      const queryString = /*sql*/ `
-      SELECT * FROM albums
-      WHERE albums.albumID=?;`; // sql query
-      const values = [id];
+// function createNewAlbum() {
+//   return async (request, response) => {
+//     const album = request.body;
 
-      const [albumIdResult] = await dbConnection.execute(queryString, values);
-      if (albumIdResult.length === 0) {
-        response
-          .status(404)
-          .json({ error: `The album with the id ${id} does not exsists` });
-      } else {
-        response.json(albumIdResult[0]);
-      }
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ error: "Internal Server Error" });
-    }
-  };
-}
+//     const albumQuery =
+//       "INSERT INTO albums (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
+//     const albumValues = [
+//       album.albumName,
+//       album.edition,
+//       album.year,
+//       album.albumImage,
+//     ];
 
-function createNewAlbum() {
-  return async (request, response) => {
-    const album = request.body;
+//     try {
+//       // Create a new album in the albums table
+//       const [newAlbum] = await dbConnection.execute(albumQuery, albumValues);
+//       console.log(newAlbum);
 
-    const albumQuery =
-      "INSERT INTO albums (albumName, edition, year, albumImage) VALUES (?,?,?,?)";
-    const albumValues = [
-      album.albumName,
-      album.edition,
-      album.year,
-      album.albumImage,
-    ];
+//       // Get the newly created albumID
+//       const newAlbumID = newAlbum.insertId;
 
-    try {
-      // Create a new album in the albums table
-      const [newAlbum] = await dbConnection.execute(albumQuery, albumValues);
-      console.log(newAlbum);
+//       for (const artist of album.artistIds) {
+//         const artistQuery =
+//           "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
 
-      // Get the newly created albumID
-      const newAlbumID = newAlbum.insertId;
+//         const artistValue = [artist, newAlbumID];
 
-      for (const artist of album.artistIds) {
-        const artistQuery =
-          "INSERT INTO artists_albums (artist_ID, album_ID) VALUES (?,?)";
+//         const [aristsAlbumsResult] = await dbConnection.execute(
+//           artistQuery,
+//           artistValue
+//         );
+//         console.log(aristsAlbumsResult);
+//       }
 
-        const artistValue = [artist, newAlbumID];
+//       for (const track of album.trackIds) {
+//         console.log(track);
+//         const trackQuery =
+//           "INSERT INTO albums_tracks (album_ID, track_ID) VALUES (?,?)";
+//         const trackValue = [newAlbumID, track];
 
-        const [aristsAlbumsResult] = await dbConnection.execute(
-          artistQuery,
-          artistValue
-        );
-        console.log(aristsAlbumsResult);
-      }
+//         const [albumsTracskResults] = await dbConnection.execute(
+//           trackQuery,
+//           trackValue
+//         );
+//         console.log(albumsTracskResults);
+//       }
 
-      for (const track of album.trackIds) {
-        console.log(track);
-        const trackQuery =
-          "INSERT INTO albums_tracks (album_ID, track_ID) VALUES (?,?)";
-        const trackValue = [newAlbumID, track];
+//       response.json({ message: "You created a new Album" });
+//     } catch (error) {
+//       console.error(error);
+//       response.status(500).json({ message: "Internal server error" });
+//     }
+//   };
+// }
 
-        const [albumsTracskResults] = await dbConnection.execute(
-          trackQuery,
-          trackValue
-        );
-        console.log(albumsTracskResults);
-      }
+// function updateAlbum() {
+//   return async (request, response) => {
+//     try {
+//       const albumID = request.params.albumId;
+//       const albumBody = request.body;
 
-      response.json({ message: "You created a new Album" });
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ message: "Internal server error" });
-    }
-  };
-}
+//       const values = [
+//         albumBody.albumName,
+//         albumBody.edition,
+//         albumBody.year,
+//         albumBody.albumImage,
+//         albumID,
+//       ];
+//       const query =
+//         "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
 
-function updateAlbum() {
-  return async (request, response) => {
-    try {
-      const albumID = request.params.albumId;
-      const albumBody = request.body;
+//       const [updatedAlbum] = await dbConnection.execute(query, values);
 
-      const values = [
-        albumBody.albumName,
-        albumBody.edition,
-        albumBody.year,
-        albumBody.albumImage,
-        albumID,
-      ];
-      const query =
-        "UPDATE albums SET albumName=?, edition=?, year=?, albumImage=? WHERE albumID=?";
+//       if (updatedAlbum.affectedRows === 0) {
+//         response
+//           .status(404)
+//           .json({ error: `The album with the id ${albumID} does not exsists` });
+//       } else {
+//         response.json(updatedAlbum);
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       response.status(500).json({ error: "Internal Server Error" });
+//     }
+//   };
+// }
 
-      const [updatedAlbum] = await dbConnection.execute(query, values);
+//function deleteAlbum(){ async (request, response) => {
+//   const albumID = request.params.albumId;
+//   const albumValues = [albumID];
+//   try {
+//     // Delete all fields with given album foreignkeys from (albums_tracks)
+//     const albumsTracksQuery = `DELETE FROM albums_tracks WHERE album_ID = ${albumID};`;
+//     const [albumtrack] = await dbConnection.query(
+//       albumsTracksQuery,
+//       albumValues
+//     );
 
-      if (updatedAlbum.affectedRows === 0) {
-        response
-          .status(404)
-          .json({ error: `The album with the id ${albumID} does not exsists` });
-      } else {
-        response.json(updatedAlbum);
-      }
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ error: "Internal Server Error" });
-    }
-  };
-}
+//     // Delete all fields with given album foreignkeys from (artists_albums)
+//     const artistAlbumtQuery = `DELETE FROM artists_albums WHERE album_ID = ${albumID};`;
+//     const [artistAlbum] = await dbConnection.query(
+//       artistAlbumtQuery,
+//       albumValues
+//     );
+
+//     // Delete the given album from (albums)
+//     const albumQuery = "DELETE FROM albums WHERE albumID=?";
+//     const [albums] = await dbConnection.query(albumQuery, albumValues);
+
+//     if (albums.affectedRows === 0) {
+//       response
+//         .status(404)
+//         .json({ error: `The album with the id ${id} does not exsists` });
+//     } else {
+//       response.json(albumtrack, artistAlbum, albums);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     response.status(500).json({ error: "Internal Server Error" });
+//   }
+// }};
