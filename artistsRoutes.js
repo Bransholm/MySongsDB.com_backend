@@ -14,6 +14,9 @@ appArtistRouter.get("/", async (request, response) => {
   }
 });
 
+// "SELECT from artists INNER JOIN artists_tracks WHERE artist.artistID = artists_tracks.id;"
+// "SELECT * FROM artists ORDER BY artistName;";
+
 // READ artist by id
 appArtistRouter.get("/:id", async (request, response) => {
   try {
