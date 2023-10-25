@@ -1,5 +1,7 @@
 import { Router } from "express";
 import dbConnection from "./data/database.js";
+import Debug from "debug"
+const debug = Debug("app:startup");
 const searchRoutes = Router();
 
 searchRoutes.get("/search", async (request, response) => {
