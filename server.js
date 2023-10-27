@@ -8,6 +8,7 @@ import appAlbumRouter from "./albumRoutes.js";
 import appArtistRouter from "./artistsRoutes.js";
 import appArtistRoutes from "./trackRoutes.js";
 import searchRoutes from "./searchFunctions.js";
+import appAlbumArtistsRouter from "./albumArtistsRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -18,6 +19,7 @@ app.use(cors());
 app.use("/albums", appAlbumRouter);
 app.use("/artists", appArtistRouter);
 app.use("/tracks", appArtistRoutes);
+app.use("/z", appAlbumArtistsRouter);
 app.use(searchRoutes);
 
 app.listen(port, () => {
@@ -267,53 +269,6 @@ app.get("/artists_albums", async (request, response) => {
   const query = "SELECT * FROM artists_albums";
   const [result] = await dbConnection.execute(query);
   response.json(result);
-});
-
-//////// ------------- ALBUM MANY TO MANY ------------- ////////
-
-app.get("/albums/:id/tracks", async (request, response) => {
-  const id = request.params.id;
-  const query = /*sql*/ `
-  SELECT albums.albumName AS albumName,
-  tracks.trackID AS trackID,
-  tracks.trackName AS trackName,
-  tracks.length AS trackLength,
-  tracks.creationYear AS trackYear,
-  tracks.genre AS genre
-
-  FROM albums
-  JOIN albums_tracks 
-  ON albums.albumID = albums_tracks.album_ID
-  JOIN tracks
-  ON tracks.trackID = albums_tracks.track_ID
-  WHERE albums.albumID = ?
-  ORDER BY albums.albumName, tracks.trackName;
-    `;
-
-  const values = [id];
-
-  dbConnection.query(query, values, (error, results) => {
-    if (error) {
-      console.log(error);
-    } else {
-      if (results[id]) {
-        const newAlbum = {
-          name: results[id].albumName,
-          track: results.map((track) => {
-            return {
-              id: track.trackID,
-              length: track.trackLenght,
-              year: track.trackYear,
-              genre: track.genre,
-            };
-          }),
-        };
-        response.json(newAlbum);
-      } else {
-        console.log("No album found");
-      }
-    }
-  });
 });
 
 //////// CROSS TABLE ROUTES ////////

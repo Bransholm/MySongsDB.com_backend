@@ -155,49 +155,55 @@ appAlbumRouter.put("/", async (request, response) => {
   }
 });
 
-// ALBUMS DOUBLE ROUTES...
-appAlbumRouter.get("artist/:id/", async (request, response) => {
-  try {
-    const id = request.params.id;
 
-    const queryString = /*sql*/ `
-      SELECT albums.*, 
-                artists.aristName AS artistName,
-                artists.birthDate AS artistsBirthdate,
-                artists.activeSince as artistsActive,
-                artists.artistImage AS artistImage,
-                aritsts.aritstID AS artistId
-       FROM albums INNER JOIN artists_albums ON albums.album_ID =  artists_albums.id 
-      INNER JOIN artists ON artits.artist_ID = artists_albums.id ;`; // sql query
 
-    // SELECT posts.id AS post_id,
-    //        posts.caption,
-    //        posts.image AS post_image,
-    //        users.id AS user_id,
-    //        users.name AS user_name,
-    //        users.mail,
-    //        users.title,
-    //        users.image AS user_image
-    // FROM posts
-    // INNER JOIN posts_users
-    //     ON posts.id = posts_users.post_id
-    // INNER JOIN users
-    //     ON posts_users.user_id = users.id;
 
-    const values = [id];
+ 
 
-    const [albumIdResult] = await dbConnection.execute(queryString, values);
-    if (albumIdResult.length === 0) {
-      response
-        .status(404)
-        .json({ error: `The album with the id ${id} does not exsists` });
-    } else {
-      response.json(albumIdResult[0]);
-    }
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: "Internal Server Error" });
-  }
-});
+// appAlbumRouter.get("/tracks/:id/", async (request, response) => {
+//   console.log("album + tracks");
+//   const id = request.params.id;
+//   const query = /*sql*/ `
+//   SELECT albums.albumName AS albumName,
+//   tracks.trackID AS trackID,
+//   tracks.trackName AS trackName,
+//   tracks.length AS trackLength,
+//   tracks.creationYear AS trackYear,
+//   tracks.genre AS genre
+
+//   FROM albums
+//   JOIN albums_tracks
+//   ON albums.albumID = albums_tracks.album_ID
+//   JOIN tracks
+//   ON tracks.trackID = albums_tracks.track_ID
+//   WHERE albums.albumID = ?
+//   ORDER BY albums.albumName, tracks.trackName;
+//     `;
+
+//   const values = [id];
+
+//   dbConnection.query(query, values, (error, results) => {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       if (results[id]) {
+//         const newAlbum = {
+//           name: results[id].albumName,
+//           track: results.map((track) => {
+//             return {
+//               id: track.trackID,
+//               length: track.trackLenght,
+//               year: track.trackYear,
+//               genre: track.genre,
+//             };
+//           }),
+//         };
+//         response.json(newAlbum);
+//       } else {
+//         console.log("No album found");
+//       }
+//     }
+//   });
+// });
 
 export default appAlbumRouter;
