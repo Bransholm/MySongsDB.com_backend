@@ -10,6 +10,9 @@ import appArtistRoutes from "./trackRoutes.js";
 import searchRoutes from "./searchFunctions.js";
 import appAlbumArtistsRouter from "./albumArtistsRoutes.js";
 
+// stuff...
+import crosstable from "./crosstable.js";
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -20,6 +23,7 @@ app.use("/albums", appAlbumRouter);
 app.use("/artists", appArtistRouter);
 app.use("/tracks", appArtistRoutes);
 app.use("/z", appAlbumArtistsRouter);
+app.use("/artistsalbums", crosstable);
 app.use(searchRoutes);
 
 app.listen(port, () => {
