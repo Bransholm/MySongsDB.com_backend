@@ -24,7 +24,7 @@ app.use("/albums", appAlbumRouter);
 app.use("/artists", appArtistRouter);
 app.use("/tracks", appArtistRoutes);
 app.use("/allAlbums", appAlbumArtistsRouter);
-app.use("/allTracks", appArtistsTracksRouter);
+app.use("/allArtists", appArtistsTracksRouter);
 app.use(searchRoutes);
 
 app.listen(port, () => {
