@@ -5,7 +5,22 @@ const appArtistRoutes = Router();
 // READ all tracks //
 appArtistRoutes.get("/", async (request, response) => {
   try {
-    const query = "SELECT * FROM tracks ORDER BY trackName";
+    const query = /*sql*/ `SELECT
+    tracks.trackID AS tracks_trackID,
+    tracks.trackName AS tracks_trackName,
+    tracks.length AS tracks_length,
+    tracks.creationYear AS tracks_creationYear,
+    tracks.genre AS tracks_genre,
+    artists_tracks.artist_ID AS artists_tracks_artist_ID,
+    artists.artistName AS artists_artistName,
+    albums_tracks.album_ID AS albums_tracks_album_ID,
+    albums.albumName AS albums_albumName
+FROM tracks
+    INNER JOIN artists_tracks ON tracks.trackID = artists_tracks.track_ID
+    INNER JOIN artists ON artists_tracks.artist_ID = artistID
+    INNER JOIN albums_tracks ON tracks.trackID = albums_tracks.track_ID
+    INNER JOIN albums ON albums_tracks.album_ID = albumID
+`;
     const [trackResult] = await dbConnection.execute(query);
     response.json(trackResult);
   } catch (error) {
