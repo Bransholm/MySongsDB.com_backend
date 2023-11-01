@@ -5,12 +5,12 @@ const appAlbumArtistsRouter = Router();
 
 appAlbumArtistsRouter.get("/", async (request, response) => {
   
-  const [albumResult] = await dbConnection.execute(query);
-const queryString = /*sql*/ ` SELECT * FROM albums
-INNER JOIN albums_tracks ON albumID = albums_tracks.album_ID
-INNER JOIN tracks ON trackID = albums_tracks.track_ID
-INNER JOIN artists_tracks ON artists_tracks.track_ID = tracks.trackID
-INNER JOIN artists ON artists.artistID = artists_tracks.artist_ID;`;
+  const queryString = /*sql*/ ` SELECT * FROM albums
+  INNER JOIN albums_tracks ON albumID = albums_tracks.album_ID
+  INNER JOIN tracks ON trackID = albums_tracks.track_ID
+  INNER JOIN artists_tracks ON artists_tracks.track_ID = tracks.trackID
+  INNER JOIN artists ON artists.artistID = artists_tracks.artist_ID;`;
+  const [albumResult] = await dbConnection.execute(queryString);
   if (!albumResult) {
     response
       .status(500)
