@@ -9,6 +9,7 @@ import appArtistRouter from "./artistsRoutes.js";
 import appArtistRoutes from "./trackRoutes.js";
 import searchRoutes from "./searchFunctions.js";
 import appAlbumArtistsRouter from "./albumArtistsRoutes.js";
+import appArtistsTracksRouter from "./artistsTracksRoutes.js"
 
 // stuff...
 import crosstable from "./crosstable.js";
@@ -22,8 +23,8 @@ app.use(cors());
 app.use("/albums", appAlbumRouter);
 app.use("/artists", appArtistRouter);
 app.use("/tracks", appArtistRoutes);
-app.use("/z", appAlbumArtistsRouter);
-app.use("/artistsalbums", crosstable);
+app.use("/allAlbums", appAlbumArtistsRouter);
+app.use("/allTracks", appArtistsTracksRouter);
 app.use(searchRoutes);
 
 app.listen(port, () => {
