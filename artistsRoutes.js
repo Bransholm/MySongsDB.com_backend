@@ -14,6 +14,14 @@ appArtistRouter.get("/", async (request, response) => {
   }
 });
 
+// --- I want to find the thing in both tables.
+// "SELECT from artists INNER JOIN artists_tracks ON artists.artistID = artists_tracks.id;"
+// "SELECT from tracks INNER JOIN aritst_tracks ON tracks.tracID = artists.artistID"
+
+// "SELECT from artists INNER JOIN artists_tracks ON artists.artistID = artists_albums.id;"
+
+// origiral -- "SELECT * FROM artists ORDER BY artistName;";
+
 // READ artist by id
 appArtistRouter.get("/:id", async (request, response) => {
   try {
