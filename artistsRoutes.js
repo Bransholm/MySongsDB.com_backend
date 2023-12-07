@@ -2,6 +2,7 @@ import { Router } from "express";
 import dbConnection from "./data/database.js";
 const appArtistRouter = Router();
 
+const limiter = 5;
 // READ all artists
 appArtistRouter.get("/", async (request, response) => {
   try {
